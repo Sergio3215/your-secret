@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const fileSchema = new Schema({
 	comment:String,
+	user:String,
 	anonimus:Boolean,
 	urlPhoto: String,
 	extension: String,

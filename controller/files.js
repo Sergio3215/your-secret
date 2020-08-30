@@ -13,23 +13,23 @@ module.exports = {
 	},
 	newFiles: async (req, res, next) => {
 		let anonimus = false
-		if(req.body.anonimus !== undefined){
+		if (req.body.anonimus !== undefined) {
 			anonimus = true;
 		}
-		const { comment} = req.body;
+		const { user,comment } = req.body;
 		const urlPhoto = "upload/" + req.file.filename;
 		const datePost = new Date();
 		let extension = ""
 		if (path.extname(req.file.originalname) === ".mp4") {
 			extension = "video";
 		}
-		else if(path.extname(req.file.originalname) === ".mp3"){
+		else if (path.extname(req.file.originalname) === ".mp3") {
 			extension = "audio";
 		}
 		else {
 			extension = "image";
 		}
-		const newFiles = await new Files({ comment, anonimus, urlPhoto, extension, datePost });
+		const newFiles = await new Files({ comment, user, anonimus, urlPhoto, extension, datePost });
 		const files = await newFiles.save();
 		res.status(200).json(files);
 	},

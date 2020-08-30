@@ -144,6 +144,21 @@ class RegiLogin extends React.Component {
             });
         }
     }
+    componentDidMount(){
+        this.queryUser();
+    }
+    queryUser() {
+        if (document.cookie !== "") {
+            var id = document.cookie;
+            id = id.split('=');
+            fetch('/users/' + id[1])
+                .then(res => res.json())
+                .then(data => {
+                    this.setState({ userName: data.user })
+                })
+                .catch(err => console.log(err))
+        }
+    }
     render() {
         var login = null;
         var SigIn = null;

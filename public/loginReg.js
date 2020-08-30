@@ -13,6 +13,21 @@ class LoginBar extends React.Component {
             click: false
         };
     }
+    componentDidMount() {
+        this.queryUser();
+    }
+    queryUser() {
+        if (document.cookie !== "") {
+            var id = document.cookie;
+            id = id.split('=');
+            fetch('/users/' + id[1])
+                .then(res => res.json())
+                .then(data => {
+                    this.setState({ userName: data.user })
+                })
+                .catch(err => console.log(err))
+        }
+    }
     handleClose() {
         document.querySelector("body").style.overflowY = "scroll";
         this.setState({
@@ -39,21 +54,6 @@ class LoginBar extends React.Component {
                 displayMenu: "none",
                 click: false
             });
-        }
-    }
-    componentDidMount() {
-        this.queryUser();
-    }
-    queryUser() {
-        if (document.cookie !== "") {
-            var id = document.cookie;
-            id = id.split('=');
-            fetch('/users/' + id[1])
-                .then(res => res.json())
-                .then(data => {
-                    this.setState({ userName: data.user })
-                })
-                .catch(err => console.log(err))
         }
     }
     render() {

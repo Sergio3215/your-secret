@@ -41,110 +41,7 @@ class LoginBar extends React.Component {
             });
         }
     }
-
-    queryUser(id) {
-        fetch('/users/' + id)
-            .then(res => res.json())
-            .then(data => {
-                this.setState({ userName: data.user })
-            })
-            .catch(err => console.log(err))
-    }
-    render() {
-        var login = null;
-        var SigIn = null;
-        var logout = null;
-        var menuLogin;
-        var subscription;
-
-        if (document.cookie === "") {
-            login =
-                <li onClick={this.handleClickButton}>Login</li>;
-            SigIn =
-                <li onClick={this.handleClickButton}>SigIn</li>;
-        }
-        else {
-            var id = document.cookie;
-            id = id.split('=');
-            this.queryUser(id[1]);
-
-            login = <label style={{ "margin-right": "70px" }} onClick={this.handleClickButtonUser}>
-                {this.state.userName}</label>;
-            logout = <li><a href="/logout">Logout</a></li>;
-            if (this.props.subs === "Administrator") {
-                subscription = <li>Subscripcion</li>
-            }
-            menuLogin =
-                <ul>
-                    <li>Perfil</li>
-                    {subscription}
-                    <li>Configuracion</li>
-                    {logout}
-                </ul>;
-        }
-        return (
-            <div>
-                <nav class="login-btn">
-                    <ul>
-                        {login}
-                        {SigIn}
-                    </ul>
-                    <nav class="nav-optionLogin" style={{ display: this.state.displayMenu }}>
-                        {menuLogin}
-                    </nav>
-                </nav>
-                <div class="Modal-Container" style={{ "display": this.state.modalDisplay }}>
-                    <Modal txtModal={this.state.txtModal}
-                        handleClose={this.handleClose} />
-                </div>
-            </div>
-        );
-    }
-}
-class RegiLogin extends React.Component {
-    constructor() {
-        super();
-        this.handleClose = this.handleClose.bind(this);
-        this.handleClickButton = this.handleClickButton.bind(this);
-        this.handleClickButtonUser = this.handleClickButtonUser.bind(this);
-
-        this.state = {
-            txtModal: "Login",
-            modalDisplay: "none",
-            userName: "",
-            displayMenu: "none",
-            click: false
-        };
-    }
-    handleClose() {
-        document.querySelector("body").style.overflowY = "scroll";
-        this.setState({
-            modalDisplay: "none"
-        })
-    }
-    handleClickButton(e) {
-        document.querySelector("body").style.overflowY = "hidden";
-        this.setState({
-            txtModal: e.target.value,
-            modalDisplay: "block"
-        });
-    }
-
-    handleClickButtonUser(e) {
-        if (!this.state.click) {
-            this.setState({
-                displayMenu: "block",
-                click: true
-            });
-        }
-        else {
-            this.setState({
-                displayMenu: "none",
-                click: false
-            });
-        }
-    }
-    componentDidMount(){
+    componentDidMount() {
         this.queryUser();
     }
     queryUser() {
@@ -168,11 +65,9 @@ class RegiLogin extends React.Component {
 
         if (document.cookie === "") {
             login =
-                <input type="button" value="Login"
-                    onClick={this.handleClickButton} />;
+                <li onClick={this.handleClickButton}>Login</li>;
             SigIn =
-                <input type="button" value="SigIn"
-                    onClick={this.handleClickButton} />;
+                <li onClick={this.handleClickButton}>SigIn</li>;
         }
         else {
             login = <label id="username" style={{ "margin-right": "70px" }} onClick={this.handleClickButtonUser}>
@@ -181,20 +76,21 @@ class RegiLogin extends React.Component {
             menuLogin =
                 <ul>
                     <li>Perfil</li>
-                    {subscription}
                     <li>Configuracion</li>
                     {logout}
                 </ul>;
         }
         return (
             <div>
-                <div class="RegistLogin">
-                    {login}
-                    {SigIn}
+                <nav class="login-btn">
+                    <ul>
+                        {login}
+                        {SigIn}
+                    </ul>
                     <nav class="nav-optionLogin" style={{ display: this.state.displayMenu }}>
                         {menuLogin}
                     </nav>
-                </div>
+                </nav>
                 <div class="Modal-Container" style={{ "display": this.state.modalDisplay }}>
                     <Modal txtModal={this.state.txtModal}
                         handleClose={this.handleClose} />

@@ -1,0 +1,18 @@
+.menu-btn nav ul li{
+    display:inline;
+    margin-right:15px;
+}
+.login-btn{
+    direction: rtl;
+    position: absolute;
+    bottom:34px;
+    top: 1px;
+    right: 1px;
+    height: 45px;
+}
+.Menu-principal-btn{
+    margin-left: 15px;
+}
+.menu-btn nav ul li:hover{
+    cursor: pointer;
+}

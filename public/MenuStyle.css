@@ -10,9 +10,17 @@
     right: 1px;
     height: 45px;
 }
+.login-btn ul label{
+    cursor: pointer;
+}
 .Menu-principal-btn{
     margin-left: 15px;
 }
 .menu-btn nav ul li:hover{
     cursor: pointer;
+}
+.nav-optionLogin ul li {
+    display: inherit !important;
+    text-align: center !important;
+    margin-right: 44px !important;
 }

@@ -5,7 +5,7 @@ class Inicio extends React.Component{
                 <div>
                     <PostCommet/>
                 </div>
-                <div>
+                <div style={{"margin-top":"20px"}}>
                     <ViewCommet/>
                 </div>
             </div>

@@ -4,7 +4,8 @@ const path = require('path');
 module.exports = {
 	index: async (req, res, next) => {
 		try {
-			const files = await Files.find();
+			let anonimus = [true,false];
+			const files = await Files.find({anonimus});
 			res.status(200).json(files);
 		}
 		catch (e) {

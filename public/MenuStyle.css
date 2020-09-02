@@ -2,6 +2,11 @@
     display:inline;
     margin-right:15px;
 }
+.menu-btn{
+    position:fixed;
+    width: 100%;
+    top:-5px;
+}
 .login-btn{
     direction: rtl;
     position: absolute;

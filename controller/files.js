@@ -1,8 +1,10 @@
 const Files = require('../model/files');
+const User = require('../model/userModel');
 const path = require('path');
 
 module.exports = {
 	index: async (req, res, next) => {
+		//console.log(req.cookies.Session)
 		try {
 			let anonimus = [true,false];
 			const files = await Files.find({anonimus});
@@ -17,10 +19,16 @@ module.exports = {
 		if (req.body.anonimus !== undefined) {
 			anonimus = true;
 		}
-		const { user,comment } = req.body;
+		const { comment } = req.body;
 		const urlPhoto = "upload/" + req.file.filename;
 		const datePost = new Date();
-		let extension = ""
+		let extension = "";
+
+		var _id=req.cookies.Session;
+		const userFetch = await User.findById({_id});
+		let user = userFetch.user;
+		//console.log(user);
+
 		if (path.extname(req.file.originalname) === ".mp4") {
 			extension = "video";
 		}

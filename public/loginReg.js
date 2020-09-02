@@ -18,9 +18,7 @@ class LoginBar extends React.Component {
     }
     queryUser() {
         if (document.cookie !== "") {
-            var id = document.cookie;
-            id = id.split('=');
-            fetch('/users/' + id[1])
+            fetch('/users/')
                 .then(res => res.json())
                 .then(data => {
                     this.setState({ userName: data.user })

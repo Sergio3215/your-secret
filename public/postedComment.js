@@ -40,17 +40,17 @@ class PostCommet extends React.Component {
         fetch('/files', {
             method: 'POST',
             body: formData
-        });
+        })
+        .then(response =>{
+            this.props.setRender();
+            return response;
+        })
     }
     render() {
         return (
             <form id="myForm" onSubmit={(e) => {
                 this.handlerSubmit(e);
             }} enctype="multipart/form-data" autoComplete="off">
-					<div>
-						<input style={{ "visibility": "hidden" }}
-							name="user" value={this.state.userSelected} />
-					</div>
                 <div>
                     <textarea placeholder="let write a comment" name="comment"></textarea>
                 </div>

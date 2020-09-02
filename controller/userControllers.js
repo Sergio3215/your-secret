@@ -3,27 +3,31 @@ const User = require('../model/userModel');
 module.exports = {
 	login: async (req, res, next) => {
 		try {
-
 			if (req.query.user !== undefined) {
 				req.query.user = req.query.user.toLowerCase()
-			}
 
-			const { user, password } = req.query;
+				const { user, password } = req.query;
 
-			if (user !== undefined
-				&& password !== undefined) {
-				const users = await User.find({ user, password });
-				//console.log(user);
-				//console.log(password);
-				if (users[0].user === user
-					&& users[0].password === password) {
-					//res.status(200).json(users);
-					res.cookie("Session", users[0].id)
+				if (user !== undefined
+					&& password !== undefined) {
+					const users = await User.find({ user, password });
+					//console.log(user);
+					//console.log(password);
+					if (users[0].user === user
+						&& users[0].password === password) {
+						//res.status(200).json(users);
+						res.cookie("Session", users[0].id)
+					}
+					res.status(200).json(users);
 				}
-				res.status(200).json(users);
+				else {
+					res.redirect('/')
+				}
 			}
-			else {
-				res.redirect('/')
+			else{
+				const _id  = req.cookies.Session;
+				const users = await User.findById({_id});
+				res.status(200).json(users);
 			}
 		}
 		catch (e) {
@@ -38,7 +42,6 @@ module.exports = {
 			}
 
 			const { user, password, name, email } = req.body;
-			console.log(user);
 			var date = new Date();
 			const emails = await User.find({ email });
 			const users = await User.find({ user });

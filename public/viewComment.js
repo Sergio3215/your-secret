@@ -1,6 +1,8 @@
-class ViewCommet extends React.Component {
+class ViewComment extends React.Component {
     constructor() {
         super();
+        this.handleDeletePost = this.handleDeletePost.bind(this);
+        this.handleEditPost = this.handleEditPost.bind(this);
         this.state = {
             commentArray: []
         };
@@ -8,15 +10,32 @@ class ViewCommet extends React.Component {
     componentDidMount() {
         this.fetchMount();
     }
+    componentDidUpdate(prevProps) {
+        if (prevProps.render !== this.props.render) {
+            this.fetchMount();
+        }
+    }
     fetchMount() {
         fetch('/files')
             .then(res => res.json())
             .then(data => {
-                let comment = data.map(this.eachComment.bind(data));
+                let comment = data.map(this.eachComment.bind(data, this.handleDeletePost, this.handleEditPost));
                 this.setState({ commentArray: comment });
             })
     }
-    eachComment(pic) {
+    handleEditPost(id) {
+        console.log(id);
+    }
+    handleDeletePost(id) {
+        fetch('/files/' + id, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                this.props.setRender();
+                return response;
+            });
+    }
+    eachComment(handleDeletePost, handleEditPost, pic) {
         var media;
         if (pic.extension === "video") {
             media = <video src={pic.urlPhoto} controls height="300px" width="250px" />
@@ -34,16 +53,26 @@ class ViewCommet extends React.Component {
         else {
             user = pic.user;
         }
+        var menubar;
+        if (document.cookie !== "") {
+            if (pic.user === document.getElementById("username").innerHTML) {
+                menubar = <div>
+                    <input type="button" onClick={() => {
+                        handleDeletePost(pic._id);
+                    }} value="Eliminar" />
+                    <input type="button" onClick={() => {
+                        handleEditPost(pic._id);
+                    }} value="Editar" />
+                </div>;
+            }
+        }
         return (
             <div style={{ "margin-top": "15px" }}>
                 <div>{user}</div>
                 <div>{pic.comment}</div>
                 <div>{media}</div>
                 <div>{pic.datePost}</div>
-                <div>
-                    <button value={pic._id}>Eliminar</button>
-                    <button value={pic._id}>Editar</button>
-                </div>
+                {menubar}
             </div>
         );
     }

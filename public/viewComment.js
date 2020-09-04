@@ -12,8 +12,15 @@ class ViewComment extends React.Component {
     }
     componentDidUpdate(prevProps) {
         if (prevProps.render !== this.props.render) {
-            this.fetchMount();
+            this.fetchUpdate();
         }
+    }
+    fetchUpdate(){
+        let commentarr = this.state.commentArray
+        let comment = this.eachComment( this.handleDeletePost, this.handleEditPost,this.props.file);
+        commentarr.push(comment)
+        commentarr = commentarr;
+        this.setState({commentArray: commentarr});
     }
     fetchMount() {
         fetch('/files')
@@ -31,48 +38,63 @@ class ViewComment extends React.Component {
             method: 'DELETE'
         })
             .then(response => {
-                this.props.setRender();
+                this.fetchMount();
                 return response;
             });
     }
     eachComment(handleDeletePost, handleEditPost, pic) {
         var media;
         if (pic.extension === "video") {
-            media = <video src={pic.urlPhoto} controls height="300px" width="250px" />
+            media = <video src={pic.urlPhoto} controls height="140px" width="250px" />
         }
         else if (pic.extension === "audio") {
-            media = <audio src={pic.urlPhoto} height="300px" width="250px" />
+            media = <audio controls height="300px" width="250px">
+                    <source src={pic.urlPhoto} type="audio/mp3"/>
+                </audio>
         }
         else if (pic.extension === "image") {
-            media = <img src={pic.urlPhoto} height="300px" width="250px" />
+            media = <img src={pic.urlPhoto} height="300px" width="300px" />
         }
         var user = "";
         if (pic.anonimus) {
             user = "Anonymus";
         }
         else {
-            user = pic.user;
+            user = <a href={"/profile/"+pic.user}>{pic.user}</a>;
         }
         var menubar;
         if (document.cookie !== "") {
-            if (pic.user === document.getElementById("username").innerHTML) {
-                menubar = <div>
-                    <input type="button" onClick={() => {
-                        handleDeletePost(pic._id);
-                    }} value="Eliminar" />
+            if (pic.user === pic.loginUser) {
+                menubar = <div class="pb-menu">
                     <input type="button" onClick={() => {
                         handleEditPost(pic._id);
                     }} value="Editar" />
+                    <input type="button" onClick={() => {
+                        handleDeletePost(pic._id);
+                    }} value="Eliminar" />
                 </div>;
             }
         }
+        //var date = pic.datePost.toLocaleString();
+        var date = new Date(pic.datePost).toLocaleString();
+        var like;
+        var pbLike;
+        if(pic.like){
+            like = <img src="/liked.png" width="50px" height="50px"/>;
+            pbLike = "pb-liked";
+        }
+        else{
+            like = <img src="/like.png" width="50px" height="50px"/>;
+            pbLike = "pb-like";
+        }
         return (
-            <div style={{ "margin-top": "15px" }}>
-                <div>{user}</div>
-                <div>{pic.comment}</div>
-                <div>{media}</div>
-                <div>{pic.datePost}</div>
+            <div class="pb-Container">
                 {menubar}
+                <div class="pb-user">{user}</div>
+                <div class="pb-date">{date}</div>
+                <div class="pb-comment">{pic.comment}</div>
+                <div class="pb-file">{media}</div>
+                <div class={pbLike}>{like}</div>
             </div>
         );
     }

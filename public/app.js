@@ -6,24 +6,27 @@ class App extends React.Component {
         this.changeBody = this.changeBody.bind(this);
         this.state = {
             txtBody: 'Inicio',
-            render:false
+            render: false,
+            file:[]
         }
     }
     componentDidMount() {
-        socket = io.connect('http://localhost:3000',
+        socket = io.connect(window.location.toString(),
             {
                 'forceNew': true
             });
-            this.setRender();
+        this.setRender();
     }
-    setRender(){
-        socket.emit('posted',this.state.render)
-        socket.on('viewPost', (key) =>{
-            console.log(key)
-            this.setState({
-                render:key
-            },()=>this.forceUpdate());
-        })
+    setRender() {
+            socket.emit('posted', this.state.render)
+            socket.on('fileUpdate', (files) => {
+                //console.log(key)
+                var key = !this.state.render;
+                this.setState({
+                    render: key,
+                    file:files
+                });
+            });
     }
     changeBody(e) {
         this.setState({ txtBody: e.target.innerHTML });
@@ -32,10 +35,12 @@ class App extends React.Component {
     render() {
         var bodyContain;
         if (this.state.txtBody === "Inicio") {
-            bodyContain = <Inicio 
-            setRender={this.setRender}
-            render={this.state.render}
-            socket={socket}/>;
+            bodyContain = <Inicio
+                setRender={this.setRender}
+                render={this.state.render}
+                socket={socket} 
+                file={this.state.file}
+                />;
         }
         else if (this.state.txtBody === "FAQ") {
             bodyContain = <Faq />;

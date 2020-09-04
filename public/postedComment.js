@@ -8,22 +8,6 @@ class PostCommet extends React.Component {
             userSelected: ''
         };
     }
-    componentDidMount() {
-        this.fetchMount();
-    }
-    fetchMount() {
-        var id = "";
-        if (document.cookie !== "") {
-            id = document.cookie.split("=");
-        }
-        fetch('/users/' + id[1])
-            .then(res => res.json())
-            .then(data => {
-                this.setState({
-                    userSelected: data.user
-                });
-            });
-    }
 
     handleChangeSelect(e) {
         this.setState({
@@ -33,17 +17,13 @@ class PostCommet extends React.Component {
 
     handlerSubmit(e) {
         e.preventDefault();
-        console.log("send");
+        //console.log("send");
         var myForm = document.getElementById("myForm");
         var formData = new FormData(myForm);
         document.getElementById("myForm").reset();
         fetch('/files', {
             method: 'POST',
             body: formData
-        })
-        .then(response =>{
-            this.props.setRender();
-            return response;
         })
     }
     render() {

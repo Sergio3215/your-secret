@@ -56,7 +56,7 @@ class LoginBar extends React.Component {
     }
     render() {
         var login = null;
-        var SigIn = null;
+        var SigUp = null;
         var logout = null;
         var menuLogin;
         var subscription;
@@ -64,8 +64,8 @@ class LoginBar extends React.Component {
         if (document.cookie === "") {
             login =
                 <li onClick={this.handleClickButton}>Login</li>;
-            SigIn =
-                <li onClick={this.handleClickButton}>SigIn</li>;
+            SigUp =
+                <li onClick={this.handleClickButton}>SigUp</li>;
         }
         else {
             login = <label id="username" style={{ "margin-right": "70px" }} onClick={this.handleClickButtonUser}>
@@ -83,7 +83,7 @@ class LoginBar extends React.Component {
                 <nav class="login-btn">
                     <ul>
                         {login}
-                        {SigIn}
+                        {SigUp}
                     </ul>
                     <nav class="nav-optionLogin" style={{ display: this.state.displayMenu }}>
                         {menuLogin}
@@ -118,7 +118,7 @@ class Login extends React.Component {
         );
     }
 }
-class SigIn extends React.Component {
+class SigUp extends React.Component {
     render() {
         return (
             <div>
@@ -247,8 +247,15 @@ class Modal extends React.Component {
     }
 
     render() {
+        var classInterface = "";
+        if (this.props.txtModal === "Login") {
+            classInterface="Modal-Interface";
+        }
+        else if (this.props.txtModal === "SigUp") {
+            classInterface="Modal-Interface2";
+        }
         return (
-            <form class="Modal-Interface" onSubmit={this.handleSubmit}>
+            <form class={classInterface} onSubmit={this.handleSubmit}>
                 <ModalHeader txtModal={this.props.txtModal}
                     handleClose={this.props.handleClose} />
                 <ModalBody
@@ -288,8 +295,8 @@ class ModalBody extends React.Component {
                 errorMsg={this.props.errorMsg}
             />;
         }
-        else if (this.props.txtModal === "SigIn") {
-            bodyModal = <SigIn
+        else if (this.props.txtModal === "SigUp") {
+            bodyModal = <SigUp
                 handleChangeUser={this.props.handleChangeUser}
                 handleChangePassword={this.props.handleChangePassword}
                 handleChangeConfirmPassword={this.props.handleChangeConfirmPassword}

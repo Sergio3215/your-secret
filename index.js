@@ -10,8 +10,8 @@ const filesRouter = require('./router/files');
 
 //web socket
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
-
+var socket = require('./socket');
+socket.connect(server)
 //cookie
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
@@ -71,7 +71,7 @@ var messages = [
 
 var id = 0;
 
-io.on('connection', function(socket) {
+/*socket.on('connection', function(socket) {
 	socket.on('login', user => {
 		id++;
 		socket.userName = user;
@@ -82,7 +82,7 @@ io.on('connection', function(socket) {
 			text: socket.userName + ' ha entrado a la sala'
 		};
 		messages.push(msg);
-		io.sockets.emit('messages', messages);
+		socket.sockets.emit('messages', messages);
 	});
 
 	socket.on('disconnect', () => {
@@ -91,7 +91,7 @@ io.on('connection', function(socket) {
 			text: socket.userName + ' ha salido de la sala'
 		};
 		messages.push(msg);
-		io.sockets.emit('messages', messages);
+		socket.sockets.emit('messages', messages);
 	});
 
 	socket.emit('messages', messages);
@@ -99,13 +99,12 @@ io.on('connection', function(socket) {
 	socket.on('new-message', data => {
 		console.log(data);
 		messages.push(data);
-		io.sockets.emit('messages', messages);
+		socket.sockets.emit('messages', messages);
 	});
 	var key = false;
 	socket.on('posted', data => {
 		key = !data;
-		console.log(key)
-		io.sockets.emit('viewPost', key);
+		socket.sockets.emit('viewPost', key);
 	});
 	socket.emit('viewPost', key);
-});
+});*/

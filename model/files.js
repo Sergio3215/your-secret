@@ -4,10 +4,12 @@ const Schema = mongoose.Schema;
 const fileSchema = new Schema({
 	comment:String,
 	user:String,
+	loginUser:String,
 	anonimus:Boolean,
 	urlPhoto: String,
 	extension: String,
-	datePost: Date
+	datePost: Date,
+	like:Boolean
 });
 
 console.log(fileSchema)

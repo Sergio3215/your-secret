@@ -59,22 +59,26 @@ class LoginBar extends React.Component {
         var SigUp = null;
         var logout = null;
         var menuLogin;
-        var subscription;
+        var modal;
 
         if (document.cookie === "") {
             login =
                 <li onClick={this.handleClickButton}>Login</li>;
             SigUp =
                 <li onClick={this.handleClickButton}>SigUp</li>;
+            modal =
+                <Modal txtModal={this.state.txtModal}
+                    handleClose={this.handleClose} />;
         }
         else {
+            var user = this.state.userName;
             login = <label id="username" style={{ "margin-right": "70px" }} onClick={this.handleClickButtonUser}>
-                {this.state.userName}</label>;
+                {user}</label>;
             logout = <li><a href="/logout">Logout</a></li>;
             menuLogin =
                 <ul>
-                    <li>Perfil</li>
-                    <li>Configuracion</li>
+                    <li><a href={"/profile/" + user}>Perfil</a></li>
+                    <li><a href={"/config"}>Configuracion</a></li>
                     {logout}
                 </ul>;
         }
@@ -90,8 +94,7 @@ class LoginBar extends React.Component {
                     </nav>
                 </nav>
                 <div class="Modal-Container" style={{ "display": this.state.modalDisplay }}>
-                    <Modal txtModal={this.state.txtModal}
-                        handleClose={this.handleClose} />
+                    {modal}
                 </div>
             </div>
         );
@@ -249,10 +252,10 @@ class Modal extends React.Component {
     render() {
         var classInterface = "";
         if (this.props.txtModal === "Login") {
-            classInterface="Modal-Interface";
+            classInterface = "Modal-Interface";
         }
         else if (this.props.txtModal === "SigUp") {
-            classInterface="Modal-Interface2";
+            classInterface = "Modal-Interface2";
         }
         return (
             <form class={classInterface} onSubmit={this.handleSubmit}>

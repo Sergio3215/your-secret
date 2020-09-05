@@ -19,12 +19,12 @@ app.use(cookieParser());
 
 //middlewar multer
 const storage = multer.diskStorage({
-	destination: path.join(__dirname,'/public/upload'),
-	filename: (req,file,cb)=>{
-		cb(null, new Date().getTime()+path.extname(file.originalname))
+	destination: path.join(__dirname, '/public/upload'),
+	filename: (req, file, cb) => {
+		cb(null, new Date().getTime() + path.extname(file.originalname))
 	}
 });
-app.use(multer({storage}).single('file'))
+app.use(multer({ storage }).single('file'))
 
 //Rest API
 app.use(bodyParser.json());
@@ -43,26 +43,53 @@ app.use('/files', filesRouter);
 require('dotenv').config();
 require('./database');
 
-app.get('/',(req,res)=>{
-    res.sendFile(__dirname+"/public/index.html");
+app.get('/', (req, res) => {
+	res.sendFile(__dirname + "/public/index.html");
 });
+
+app.get('/profile/:name', async (req, res) => {
+	const User = require('./model/userModel');
+	const { user } = req.params.name;
+	let userName = await User.find(user);
+
+	var key = false;
+	for (var kk = 0; kk < userName.length; kk++) {
+		if (userName[kk].user === req.params.name) {
+			key = true;
+		}
+	}
+
+	if (key) {
+		res.send(req.params.name);
+	}
+	else {
+		res.send("Error! No se ha encontrado el usuario");
+	}
+});
+
+app.get('/config', (req, res) => {
+	res.send('configuration');
+});
+
 app.get('/logout', (req, res) => {
 	res.clearCookie('Session');
 	res.redirect('/');
 });
 
 app.use(express.static('public'))
-app.use(express.static('react_modules'))
+app.use(express.static('react_modules'));
 
-/*app.listen(3000,()=>{
-    console.log('conected');
-})*/
+//Error Custom
+app.use((req, res)=>{
+	res.status(404).send('The page don\'t exist')
+})
 
-server.listen(3000,()=>{
+server.listen(3000, () => {
 	console.log('conected with WebSocket')
 });
+
 //WebSocket
-var messages = [
+/*var messages = [
 	{
 		author: 'Bot',
 		text: 'Bienvenido al chat!'
@@ -71,7 +98,7 @@ var messages = [
 
 var id = 0;
 
-/*socket.on('connection', function(socket) {
+socket.on('connection', function(socket) {
 	socket.on('login', user => {
 		id++;
 		socket.userName = user;

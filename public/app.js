@@ -7,7 +7,7 @@ class App extends React.Component {
         this.state = {
             txtBody: 'Inicio',
             render: false,
-            file:[]
+            file: []
         }
     }
     componentDidMount() {
@@ -18,15 +18,15 @@ class App extends React.Component {
         this.setRender();
     }
     setRender() {
-            socket.emit('posted', this.state.render)
-            socket.on('fileUpdate', (files) => {
-                //console.log(key)
-                var key = !this.state.render;
-                this.setState({
-                    render: key,
-                    file:files
-                });
+        socket.emit('posted', this.state.render)
+        socket.on('fileUpdate', (files) => {
+            //console.log(key)
+            var key = !this.state.render;
+            this.setState({
+                render: key,
+                file: files
             });
+        });
     }
     changeBody(e) {
         this.setState({ txtBody: e.target.innerHTML });
@@ -38,9 +38,9 @@ class App extends React.Component {
             bodyContain = <Inicio
                 setRender={this.setRender}
                 render={this.state.render}
-                socket={socket} 
+                socket={socket}
                 file={this.state.file}
-                />;
+            />;
         }
         else if (this.state.txtBody === "FAQ") {
             bodyContain = <Faq />;
@@ -50,19 +50,19 @@ class App extends React.Component {
         }
         return (
             <div>
-                <div class="menu-btn">
-                    <Navigation
-                        changeBody={this.changeBody} />
-                    <LoginBar />
-                </div>
                 <div class="BodyApp">
                     <Body>
                         {bodyContain}
                     </Body>
                 </div>
-                <div style={{ "margin-left": "5px" }}>
-                    <Footer />
+                <div class="menu-btn">
+                    <Navigation
+                        changeBody={this.changeBody} />
+                    <LoginBar />
                 </div>
+                {/*<div style={{ "margin-left": "5px" }}>
+                    <Footer />
+                </div>*/}
             </div>
         );
     }

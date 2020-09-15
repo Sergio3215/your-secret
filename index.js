@@ -60,7 +60,8 @@ app.get('/profile/:name', async (req, res) => {
 	}
 
 	if (key) {
-		res.send(req.params.name);
+		//res.send(req.params.name);
+		res.sendFile(__dirname + "/public/profile/index.html");
 	}
 	else {
 		res.send("Error! No se ha encontrado el usuario");
@@ -68,7 +69,7 @@ app.get('/profile/:name', async (req, res) => {
 });
 
 app.get('/config', (req, res) => {
-	res.send('configuration');
+	res.sendFile(__dirname + "/public/configuration/index.html");
 });
 
 app.get('/logout', (req, res) => {
@@ -77,6 +78,8 @@ app.get('/logout', (req, res) => {
 });
 
 app.use(express.static('public'))
+app.use(express.static('public/profile'))
+app.use(express.static('public/configuration'))
 app.use(express.static('react_modules'));
 
 //Error Custom

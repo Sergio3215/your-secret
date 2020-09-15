@@ -7,7 +7,8 @@ const {
 	newFiles,
 	getFiles/*,
 	replaceFiles*/,
-	deleteFiles
+	deleteFiles,
+	likes
 } = require('../controller/files');
 
 router.get("/", index);
@@ -17,6 +18,8 @@ router.post("/", newFiles);
 //router.get("/", getFiles);
 /*
 router.put("/:filesId", replaceFiles);*/
+
+router.put("/:filesId", likes);
 
 router.delete("/:filesId", deleteFiles);
 

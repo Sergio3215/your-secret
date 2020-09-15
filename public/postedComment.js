@@ -51,6 +51,7 @@ class PostCommet extends React.Component {
         var myForm = document.getElementById("myForm");
         var formData = new FormData(myForm);
         document.getElementById("myForm").reset();
+        this.setState({ classText: 'selectFile' }, () => this.forceUpdate());
         this.viewPrew = [];
         fetch('/files', {
             method: 'POST',
@@ -77,7 +78,10 @@ class PostCommet extends React.Component {
                         <input type="checkbox" name="anonimus" />
                         <span class="checkmark "></span>
                     </label>
-                    <input id="pc-submit" type="submit" value="send" />
+                    <div id="pc-subminContainer">
+                    <input id="pc-submit" type="submit" value="send"/>
+                        <div class="arrow"></div>
+                    </div>
                 </div>
             </form>
         );

@@ -7,7 +7,10 @@ class App extends React.Component {
         this.state = {
             txtBody: 'Inicio',
             render: false,
-            file: []
+            file: [],
+            like:false,
+            liked:[], 
+            id:''
         }
     }
     componentDidMount() {
@@ -27,6 +30,17 @@ class App extends React.Component {
                 file: files
             });
         });
+        socket.on('likeUpdate', (like, liked, id) => {
+            //console.log(key)
+            console.log(like)
+            console.log(liked)
+            console.log(id)
+            this.setState({
+                like: like,
+                liked:liked,
+                id:id
+            });
+        });
     }
     changeBody(e) {
         this.setState({ txtBody: e.target.innerHTML });
@@ -40,6 +54,9 @@ class App extends React.Component {
                 render={this.state.render}
                 socket={socket}
                 file={this.state.file}
+                like={this.state.like}
+                liked={this.state.liked}
+                id={this.state.id}
             />;
         }
         else if (this.state.txtBody === "FAQ") {

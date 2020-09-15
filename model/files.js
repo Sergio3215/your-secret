@@ -9,7 +9,10 @@ const fileSchema = new Schema({
 	urlPhoto: String,
 	extension: String,
 	datePost: Date,
-	like:Boolean
+	like:Boolean,
+	liked:[{
+		user:String
+	}]
 });
 
 console.log(fileSchema)

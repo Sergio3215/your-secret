@@ -12,7 +12,11 @@ class Inicio extends React.Component{
                     <ViewComment 
                     render={this.props.render}
                     setRender={this.props.setRender}
-                    file={this.props.file}/>
+                    file={this.props.file}
+                    like={this.props.like}
+                    liked={this.props.liked}
+                    id={this.props.id}
+                    />
                 </div>
             </div>
         );

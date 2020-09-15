@@ -4,6 +4,7 @@ class ViewComment extends React.Component {
         this.handleDeletePost = this.handleDeletePost.bind(this);
         this.handleEditPost = this.handleEditPost.bind(this);
         this.clickMenu = this.clickMenu.bind(this);
+        this.handlerLike = this.handlerLike.bind(this);
         this.clickMen = false;
         this.state = {
             commentArray: []
@@ -16,16 +17,47 @@ class ViewComment extends React.Component {
         if (prevProps.render !== this.props.render) {
             this.fetchUpdate();
         }
+        if (this.props.like !== prevProps.like
+            || this.props.liked !== prevProps.liked
+            || prevProps.id != this.props.id) {
+            var id = this.props.id + ":Like";
+            this.likeUpdate(id, this.props.like, this.props.liked);
+        }
     }
     fetchUpdate() {
         var data = [];
         data.push(this.props.file)
-        let commentarr = this.state.commentArray
-        let comment = data.map(this.eachComment(this));
-        commentarr.push(comment);
-        commentarr = commentarr;
-        this.setState({ commentArray: commentarr });
+        let commentarr = this.state.commentArray;
+        commentarr = commentarr.reverse();
+        let comment = data.map(this.eachComment.bind(this));
+        commentarr.push(comment[0]);
+        commentarr = commentarr.reverse();
+        this.setState({ commentArray: commentarr }, () => this.forceUpdate());
     }
+    likeUpdate(idLike, like, liked) {
+        var div = document.getElementById(idLike);
+        div.childNodes[0].innerHTML = liked.length;
+
+        var nameLiked = "";
+        for (var jj = 0; jj < liked.length; jj++) {
+            try {
+                if (jj == 2) {
+                    nameLiked += "y mas...";
+                }
+                else if (jj === liked.length - 1) {
+                    nameLiked += liked[jj].user;
+                }
+                else {
+                    nameLiked += liked[jj].user + ", ";
+                }
+            }
+            catch (e) {
+
+            }
+        }
+        div.childNodes[2].innerHTML = nameLiked;
+    }
+
     fetchMount() {
         fetch('/files')
             .then(res => res.json())
@@ -49,16 +81,49 @@ class ViewComment extends React.Component {
     clickMenu(id) {
         var div = document.getElementById(id);
         var srt = "";
-        if(this.clickMen){
-            this.clickMen=false;
-            srt="none";
+        if (this.clickMen) {
+            this.clickMen = false;
+            srt = "none";
         }
-        else{
-            this.clickMen=true;
-            srt="inline";
+        else {
+            this.clickMen = true;
+            srt = "inline";
         }
         div.getElementsByTagName("input")[0].style.display = srt;
         div.getElementsByTagName("input")[1].style.display = srt;
+    }
+    handlerLike(e) {
+        console.log(e);
+        var key = false;
+        if (e.target.parentNode.className !== "pb-liked") {
+            key = true;
+        }
+        var data = {
+            like: key
+        }
+
+        var div = document.getElementById(e.target.parentNode.id);
+        if (e.target.parentNode.className === "pb-liked") {
+            div.className = "pb-like";
+            div.childNodes[1].src = "/like.png";
+        }
+        else {
+            div.className = "pb-liked";
+            div.childNodes[0].src = "/liked.png";
+            div.childNodes[1].src = "/liked.png";
+        }
+
+        var id = e.target.parentNode.id;
+        id = id.split(':');
+        id = id[0];
+        fetch('/files/' + id, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8'
+            }
+        })
+            .catch(err => console.log(err))
     }
     eachComment(pic) {
         var media;
@@ -97,9 +162,41 @@ class ViewComment extends React.Component {
         }
         //var date = pic.datePost.toLocaleString();
         var date = new Date(pic.datePost).toLocaleString();
+
+        var nameLiked = "";
+        var likeBool = false;
+        for (var jj = 0; jj < pic.liked.length; jj++) {
+            try {
+                if (pic.liked[jj].user === pic.loginUser) {
+                    likeBool = true;
+                    break;
+                }
+            }
+            catch (e) {
+
+            }
+        }
+
+        for (var jj = 0; jj < pic.liked.length; jj++) {
+            if (pic.liked[jj].user !== undefined) {
+                if (jj == 2) {
+                    nameLiked += "y mas...";
+                }
+                else if (jj === pic.liked.length - 1) {
+                    nameLiked += pic.liked[jj].user;
+                }
+                else {
+                    nameLiked += pic.liked[jj].user + ", ";
+                }
+            }
+            else {
+                pic.liked.length = 0;
+            }
+        }
+
         var like;
         var pbLike;
-        if (pic.like) {
+        if (likeBool) {
             like = <img src="/liked.png" width="50px" height="50px" />;
             pbLike = "pb-liked";
         }
@@ -107,6 +204,7 @@ class ViewComment extends React.Component {
             like = <img src="/like.png" width="50px" height="50px" />;
             pbLike = "pb-like";
         }
+
         return (
             <div class="pb-Container">
                 {menubar}
@@ -116,13 +214,24 @@ class ViewComment extends React.Component {
                 </div>
                 <div class="pb-comment">{pic.comment}</div>
                 <div class="pb-file">{media}</div>
-                <div class={pbLike}>{like}</div>
+                <div class={pbLike} id={pic._id + ":Like"} onClick={(e) => {
+                    if(document.cookie !==""){
+                        this.handlerLike(e);
+                    }
+                    else{
+                        alert("you need register on the web page")
+                    }
+                }}>
+                    <span>{pic.liked.length}</span>
+                    {like}
+                    <span class="pb-likeNames">{nameLiked}</span>
+                </div>
             </div>
         );
     }
     render() {
         return (
-            <div>
+            <div id="pb-postView">
                 {this.state.commentArray}
             </div>
         );

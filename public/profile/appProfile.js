@@ -1,6 +1,18 @@
 class Profile extends React.Component {
     constructor() {
         super();
+        this.state={
+            profileArray:[]
+        }
+    }
+
+    componentDidMount(){
+        this.fetchMount();
+    }
+
+    fetchMount(){
+        var username = window.location.pathname.split('/')[2];
+        console.log(username);
     }
 
     render() {
@@ -17,6 +29,9 @@ class Profile extends React.Component {
                         }}>Back</button>
                         <b style={{"margin-left":(sizeWidth/2)-50}}>Profile</b>
                     </nav>
+                </div>
+                <div class="pf-body">
+
                 </div>
             </div>
         );

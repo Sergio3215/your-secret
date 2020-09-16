@@ -18,6 +18,9 @@ class Configuration extends React.Component {
                         <b style={{"margin-left":(sizeWidth/2)-50}}>Configuracion</b>
                     </nav>
                 </div>
+                <div class="cf-body">
+
+                </div>
             </div>
         );
     }

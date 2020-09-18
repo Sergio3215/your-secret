@@ -7,6 +7,7 @@ const path = require('path');
 
 const userRouter = require('./router/userRouter');
 const filesRouter = require('./router/files');
+const profileRouter = require('./router/profile');
 
 //web socket
 var server = require('http').Server(app);
@@ -38,6 +39,7 @@ app.use(
 //Ruters
 app.use('/users', userRouter);
 app.use('/files', filesRouter);
+app.use('/profiles', profileRouter);
 
 //enviroment and database
 require('dotenv').config();

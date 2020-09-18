@@ -1,3 +1,4 @@
+var socket;
 class ViewComment extends React.Component {
     constructor() {
         super();
@@ -12,21 +13,32 @@ class ViewComment extends React.Component {
     }
     componentDidMount() {
         this.fetchMount();
+        socket = io.connect(window.location.toString().split("/profile/")[0],
+            {
+                'forceNew': true
+            });
+        this.setRender();
     }
-    componentDidUpdate(prevProps) {
-        if (prevProps.render !== this.props.render) {
-            this.fetchUpdate();
-        }
-        if (this.props.like !== prevProps.like
-            || this.props.liked !== prevProps.liked
-            || prevProps.id != this.props.id) {
-            var id = this.props.id + ":Like";
-            this.likeUpdate(id, this.props.like, this.props.liked);
-        }
+    
+    setRender() {
+        socket.emit('posted', this.state.render)
+        socket.on('fileUpdate', (files) => {
+            //console.log(key)
+            this.fetchUpdate(files);
+        });
+        socket.on('likeUpdate', (like, liked, id,user) => {
+            //console.log(key)
+            console.log(like)
+            console.log(liked)
+            console.log(id)
+            console.log(user)
+            id = id + ":Like";
+            this.likeUpdate(id, like, liked,user);
+        });
     }
-    fetchUpdate() {
+    fetchUpdate(file) {
         var data = [];
-        data.push(this.props.file)
+        data.push(file)
         let commentarr = this.state.commentArray;
         commentarr = commentarr.reverse();
         let comment = data.map(this.eachComment.bind(this));
@@ -34,7 +46,7 @@ class ViewComment extends React.Component {
         commentarr = commentarr.reverse();
         this.setState({ commentArray: commentarr }, () => this.forceUpdate());
     }
-    likeUpdate(idLike, like, liked) {
+    likeUpdate(idLike, like, liked, user) {
         var div = document.getElementById(idLike);
         div.childNodes[0].innerHTML = liked.length;
 
@@ -56,15 +68,48 @@ class ViewComment extends React.Component {
             }
         }
         div.childNodes[2].innerHTML = nameLiked;
+        
+        var likeBool = false;
+        for (var jj = 0; jj < liked.length; jj++) {
+            try {
+                if (liked[jj].user === user) {
+                    likeBool = true;
+                    break;
+                }
+            }
+            catch (e) {
+
+            }
+        }
+
+        if (!likeBool) {
+            div.className = "pb-like";
+            div.childNodes[1].src = "/like.png";
+        }
+        else {
+            div.className = "pb-liked";
+            div.childNodes[0].src = "/liked.png";
+            div.childNodes[1].src = "/liked.png";
+        }
     }
 
     fetchMount() {
-        fetch('/files')
-            .then(res => res.json())
-            .then(data => {
-                let comment = data.map(this.eachComment.bind(this));
-                this.setState({ commentArray: comment });
-            })
+        if (this.props.profile) {
+            fetch('/files/' + this.props.username)
+                .then(res => res.json())
+                .then(data => {
+                    let profile = data.map(this.eachComment.bind(this));
+                    this.setState({ commentArray: profile }, () => this.forceUpdate());
+                })
+        }
+        else {
+            fetch('/files')
+                .then(res => res.json())
+                .then(data => {
+                    let comment = data.map(this.eachComment.bind(this));
+                    this.setState({ commentArray: comment });
+                })
+        }
     }
     handleEditPost(id) {
         console.log(id);
@@ -128,15 +173,15 @@ class ViewComment extends React.Component {
     eachComment(pic) {
         var media;
         if (pic.extension === "video") {
-            media = <video src={pic.urlPhoto} controls height="140px" width="250px" />
+            media = <video src={"/"+pic.urlPhoto} controls height="140px" width="250px" />
         }
         else if (pic.extension === "audio") {
             media = <audio controls height="300px" width="250px">
-                <source src={pic.urlPhoto} type="audio/mp3" />
+                <source src={"/"+pic.urlPhoto} type="audio/mp3" />
             </audio>
         }
         else if (pic.extension === "image") {
-            media = <img src={pic.urlPhoto} height="300px" width="300px" />
+            media = <img src={"/"+pic.urlPhoto} height="300px" width="300px" />
         }
         var user = "";
         if (pic.anonimus) {
@@ -215,10 +260,10 @@ class ViewComment extends React.Component {
                 <div class="pb-comment">{pic.comment}</div>
                 <div class="pb-file">{media}</div>
                 <div class={pbLike} id={pic._id + ":Like"} onClick={(e) => {
-                    if(document.cookie !==""){
+                    if (document.cookie !== "") {
                         this.handlerLike(e);
                     }
-                    else{
+                    else {
                         alert("you need register on the web page")
                     }
                 }}>

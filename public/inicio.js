@@ -9,14 +9,7 @@ class Inicio extends React.Component{
                     }
                 </div>
                 <div style={{"margin-top":"20px"}}>
-                    <ViewComment 
-                    render={this.props.render}
-                    setRender={this.props.setRender}
-                    file={this.props.file}
-                    like={this.props.like}
-                    liked={this.props.liked}
-                    id={this.props.id}
-                    />
+                    <ViewComment />
                 </div>
             </div>
         );

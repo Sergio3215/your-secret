@@ -1,7 +1,6 @@
 const Files = require('../model/files');
 const User = require('../model/userModel');
 const path = require('path');
-const { ifError } = require('assert');
 const socket = require("../socket").socket;
 
 module.exports = {
@@ -89,6 +88,23 @@ module.exports = {
 		const oldFiles = await Files.findByIdAndUpdate(filesId, newFiles)
 		res.status(200).json({ success: true });
 	}*/,
+	profile: async (req, res, next) => {
+		var {user} = req.params;
+		var _id = req.cookies.Session;
+
+		var anonimus = false;
+		const files = await Files.find({anonimus, user});
+		
+		const userFetch = await User.findById({ _id });
+		user = userFetch.user;
+
+		for(var ii=0; ii<files.length; ii++){
+			files[ii].loginUser = user;
+		}
+
+		//console.log(files)
+		res.status(200).json(files);
+	},
 	likes: async (req, res, next) => {
 		const { filesId } = req.params;
 		const { like } = req.body;
@@ -134,7 +150,7 @@ module.exports = {
 		//console.log(oldFiles);
 		
 		//websocket
-		socket.io.emit('likeUpdate', like, liked, oldFiles._id);
+		socket.io.emit('likeUpdate', like, liked, oldFiles._id, user);
 
 		res.status(200).json({ success: true });
 	},

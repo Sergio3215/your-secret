@@ -8,10 +8,13 @@ const {
 	getFiles/*,
 	replaceFiles*/,
 	deleteFiles,
-	likes
+	likes,
+	profile
 } = require('../controller/files');
 
 router.get("/", index);
+
+router.get("/:user", profile);
 
 router.post("/", newFiles);
 

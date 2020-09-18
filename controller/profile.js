@@ -21,7 +21,7 @@ module.exports = {
 				post[0].post++
 			}
 		}
-		console.log(post)
+		//console.log(post)
 		res.status(200).json(post);
 	}
 };

@@ -116,7 +116,6 @@ class Login extends React.Component {
                         onChange={this.props.handleChangePassword}
                     />
                 </div>
-                <div style={{ "color": "red" }}>{this.props.errorMsg}</div>
             </div>
         );
     }
@@ -155,7 +154,6 @@ class SigUp extends React.Component {
                         onChange={this.props.handleChangeEmail}
                     />
                 </div>
-                <div style={{ "color": "red" }}>{this.props.errorMsg}</div>
             </div>
         );
     }
@@ -171,6 +169,7 @@ class Modal extends React.Component {
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangeName = this.handleChangeName.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.resetState = this.resetState.bind(this);
 
         this.state = {
             user: "",
@@ -203,6 +202,11 @@ class Modal extends React.Component {
     handleChangeName(e) {
         this.setState({ name: e.target.value });
     }
+    resetState() {
+        this.setState({
+            errorMsg: ""
+        });
+    }
 
     handleSubmit(e) {
         e.preventDefault();
@@ -210,8 +214,14 @@ class Modal extends React.Component {
             fetch('/users?user=' + this.state.user + '&&password=' + this.state.password)
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
-                    window.location.href = "/";
+                    //console.log(data);
+                    if (data.msg === undefined) {
+                        window.location.href = "/";
+                    }
+                    else {
+                        console.log(data.msg);
+                        this.setState({ errorMsg: data.msg }, () => this.forceUpdate())
+                    }
                 })
                 .catch(err => {
                     //console.log(err)
@@ -238,9 +248,13 @@ class Modal extends React.Component {
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
-                    if (data.length > 0) {
+                    //console.log(data);
+                    if (data.msg === undefined) {
                         window.location.href = "/";
+                    }
+                    else {
+                        console.log(data.msg);
+                        this.setState({ errorMsg: data.msg }, () => this.forceUpdate())
                     }
                 })
                 .catch(err => {
@@ -260,7 +274,8 @@ class Modal extends React.Component {
         return (
             <form class={classInterface} onSubmit={this.handleSubmit}>
                 <ModalHeader txtModal={this.props.txtModal}
-                    handleClose={this.props.handleClose} />
+                    handleClose={this.props.handleClose} 
+                    resetState={this.resetState}/>
                 <ModalBody
                     txtModal={this.props.txtModal}
                     handleChangeUser={this.handleChangeUser}
@@ -271,7 +286,8 @@ class Modal extends React.Component {
                     errorMsg={this.state.errorMsg}
                 />
                 <ModalFooter
-                    handleClose={this.props.handleClose} />
+                    handleClose={this.props.handleClose}
+                    resetState={this.resetState} />
             </form>
         );
     }
@@ -284,7 +300,7 @@ class ModalHeader extends React.Component {
                 <input class="Modal-Close"
                     type="button"
                     value="X"
-                    onClick={this.props.handleClose} />
+                    onClick={()=>{this.props.handleClose();this.props.resetState();}} />
             </div>);
     }
 }
@@ -308,7 +324,10 @@ class ModalBody extends React.Component {
                 errorMsg={this.props.errorMsg}
             />;
         }
-        return <div class="Modal-Body">{bodyModal}</div>;
+        return <div class="Modal-Body">
+            {bodyModal}
+            <div style={{ "color": "red", "font-size": "12px" }}>{this.props.errorMsg}</div>
+        </div>;
     }
 }
 class ModalFooter extends React.Component {
@@ -317,7 +336,7 @@ class ModalFooter extends React.Component {
             <div class="Modal-Footer">
                 <input type="submit" class="acept" value="Enviar" />
                 <input type="button" class="cancel" value="cancel"
-                    onClick={this.props.handleClose} />
+                    onClick={()=>{this.props.handleClose();this.props.resetState();}} />
             </div>
         );
     }

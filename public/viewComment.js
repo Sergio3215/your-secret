@@ -19,21 +19,21 @@ class ViewComment extends React.Component {
             });
         this.setRender();
     }
-    
+
     setRender() {
         socket.emit('posted', this.state.render)
         socket.on('fileUpdate', (files) => {
-            //console.log(key)
+            console.log(files)
             this.fetchUpdate(files);
         });
-        socket.on('likeUpdate', (like, liked, id,user) => {
+        socket.on('likeUpdate', (liked, id, user, idUser) => {
             //console.log(key)
-            console.log(like)
+            //console.log(like)
             console.log(liked)
             console.log(id)
             console.log(user)
             id = id + ":Like";
-            this.likeUpdate(id, like, liked,user);
+            this.likeUpdate(id, liked, user, idUser);
         });
     }
     fetchUpdate(file) {
@@ -46,9 +46,14 @@ class ViewComment extends React.Component {
         commentarr = commentarr.reverse();
         this.setState({ commentArray: commentarr }, () => this.forceUpdate());
     }
-    likeUpdate(idLike, like, liked, user) {
+    likeUpdate(idLike, liked, user, idUser) {
+        try{
         var div = document.getElementById(idLike);
         div.childNodes[0].innerHTML = liked.length;
+        }
+        catch(e){
+            window.location.href=window.location.toString(); 
+        }
 
         var nameLiked = "";
         for (var jj = 0; jj < liked.length; jj++) {
@@ -68,28 +73,30 @@ class ViewComment extends React.Component {
             }
         }
         div.childNodes[2].innerHTML = nameLiked;
-        
-        var likeBool = false;
-        for (var jj = 0; jj < liked.length; jj++) {
-            try {
-                if (liked[jj].user === user) {
-                    likeBool = true;
-                    break;
+
+        if (idUser === document.cookie.split("=")[1]) {
+            var likeBool = false;
+            for (var jj = 0; jj < liked.length; jj++) {
+                try {
+                    if (liked[jj].user === user) {
+                        likeBool = true;
+                        break;
+                    }
+                }
+                catch (e) {
+
                 }
             }
-            catch (e) {
 
+            if (!likeBool) {
+                div.className = "pb-like";
+                div.childNodes[1].src = "/like.png";
             }
-        }
-
-        if (!likeBool) {
-            div.className = "pb-like";
-            div.childNodes[1].src = "/like.png";
-        }
-        else {
-            div.className = "pb-liked";
-            div.childNodes[0].src = "/liked.png";
-            div.childNodes[1].src = "/liked.png";
+            else {
+                div.className = "pb-liked";
+                div.childNodes[0].src = "/liked.png";
+                div.childNodes[1].src = "/liked.png";
+            }
         }
     }
 
@@ -173,15 +180,15 @@ class ViewComment extends React.Component {
     eachComment(pic) {
         var media;
         if (pic.extension === "video") {
-            media = <video src={"/"+pic.urlPhoto} controls height="140px" width="250px" />
+            media = <video src={"/" + pic.urlPhoto} controls height="140px" width="250px" />
         }
         else if (pic.extension === "audio") {
             media = <audio controls height="300px" width="250px">
-                <source src={"/"+pic.urlPhoto} type="audio/mp3" />
+                <source src={"/" + pic.urlPhoto} type="audio/mp3" />
             </audio>
         }
         else if (pic.extension === "image") {
-            media = <img src={"/"+pic.urlPhoto} height="300px" width="300px" />
+            media = <img src={"/" + pic.urlPhoto} height="300px" width="300px" />
         }
         var user = "";
         if (pic.anonimus) {
@@ -192,7 +199,7 @@ class ViewComment extends React.Component {
         }
         var menubar;
         if (document.cookie !== "") {
-            if (pic.user === pic.loginUser) {
+            if(document.cookie.split("=")[1] === pic.idUser){
                 menubar = <div class="pb-menu" id={pic._id} onClick={(e) => {
                     this.clickMenu(pic._id);
                 }}><div class="containerMenu"></div>

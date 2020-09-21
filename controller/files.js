@@ -55,8 +55,9 @@ module.exports = {
 		let user = userFetch.user;
 		const like = false;
 		const loginUser = "";
+		const idUser = _id;
 		const liked = [{}]
-		const newFiles = await new Files({ comment, user, loginUser, anonimus, urlPhoto, extension, datePost, like, liked });
+		const newFiles = await new Files({ comment, user, loginUser, idUser, anonimus, urlPhoto, extension, datePost, like, liked });
 		const files = await newFiles.save();
 		//console.log(files);
 
@@ -71,7 +72,7 @@ module.exports = {
 		var _id = req.cookies.Session;
 		const userFetch = await User.findById({ _id });
 		let user = userFetch.user;
-		
+
 		const files = await Files.find();
 		files.loginUser = user;
 		res.status(200).json(files);
@@ -89,16 +90,20 @@ module.exports = {
 		res.status(200).json({ success: true });
 	}*/,
 	profile: async (req, res, next) => {
-		var {user} = req.params;
-		var _id = req.cookies.Session;
-
+		var { user } = req.params;
 		var anonimus = false;
-		const files = await Files.find({anonimus, user});
-		
-		const userFetch = await User.findById({ _id });
-		user = userFetch.user;
+		const files = await Files.find({ anonimus, user });
+		//console.log(req.cookies.Session)
+		try {
+			var _id = req.cookies.Session;
+			const userFetch = await User.findById({ _id });
+			user = userFetch.user;
+		}
+		catch(e) {
+			user = "";
+		}
 
-		for(var ii=0; ii<files.length; ii++){
+		for (var ii = 0; ii < files.length; ii++) {
 			files[ii].loginUser = user;
 		}
 
@@ -138,7 +143,7 @@ module.exports = {
 			for (var ii = 0; ii < files.liked.length; ii++) {
 				if (files.liked[ii].user === user) {
 					//console.log("delete")
-					files.liked.splice(ii,1);
+					files.liked.splice(ii, 1);
 					break;
 				}
 			}
@@ -148,9 +153,9 @@ module.exports = {
 
 		const oldFiles = await Files.findByIdAndUpdate(filesId, { like, liked })
 		//console.log(oldFiles);
-		
+
 		//websocket
-		socket.io.emit('likeUpdate', like, liked, oldFiles._id, user);
+		socket.io.emit('likeUpdate', liked, oldFiles._id, user, _id);
 
 		res.status(200).json({ success: true });
 	},

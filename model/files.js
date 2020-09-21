@@ -5,6 +5,7 @@ const fileSchema = new Schema({
 	comment:String,
 	user:String,
 	loginUser:String,
+	idUser:String,
 	anonimus:Boolean,
 	urlPhoto: String,
 	extension: String,

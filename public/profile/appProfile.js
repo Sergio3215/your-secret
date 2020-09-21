@@ -22,7 +22,7 @@ class Profile extends React.Component {
     Posting(pic){
         var username = window.location.pathname.split('/')[2];
         return(
-            <div>
+            <div class="pf-header">
                 <div>{username}</div>
                 <div>
                     {"Post: "+pic.post}

@@ -1,4 +1,5 @@
 const User = require('../model/userModel');
+const Files = require('../model/files');
 
 module.exports = {
 	login: async (req, res, next) => {
@@ -10,18 +11,23 @@ module.exports = {
 
 				if (user !== undefined
 					&& password !== undefined) {
-					const users = await User.find({ user, password });
+					let users = await User.find({ user, password });
 					//console.log(user);
 					//console.log(password);
 					if (users[0].user === user
 						&& users[0].password === password) {
 						//res.status(200).json(users);
 						res.cookie("Session", users[0].id)
+						res.status(200).json(users);
 					}
-					res.status(200).json(users);
+					else{
+						users = {msg:'user or password is incorrect'};
+						res.status(200).json(users);
+					}
 				}
 				else {
-					res.redirect('/')
+					let users = {msg:'you need write a user and password'};
+					res.status(200).json(users);
 				}
 			}
 			else{
@@ -31,7 +37,9 @@ module.exports = {
 			}
 		}
 		catch (e) {
-			console.log(e)
+			//console.log(e)
+			users = {msg:'user or password is incorrect'};
+			res.status(200).json(users);
 		}
 	},
 	newUser: async (req, res, next) => {
@@ -50,14 +58,17 @@ module.exports = {
 				const newUser = await new User({ user, password, name, email });
 				//console.log(newUser)
 				newusers = await newUser.save();
+				res.status(200).json(newusers);
 			}
 			else {
-				newusers = {};
+				newusers = {msg:'Error, the email or user was used'};
+				res.status(200).json(newusers);
 			}
-			res.status(200).json(newusers);
 		}
 		catch (e) {
-			console.log(e)
+			console.log(e);
+			newusers = {msg:'Error while try create the account'};
+			res.status(200).json(newusers);
 		}
 	},
 	getUser: async (req, res, next) => {
@@ -68,18 +79,44 @@ module.exports = {
 	replaceUser: async (req, res, next) => {
 		const { userId } = req.params;
 		const newUser = req.body;
-		const oldUser = await User.findByIdAndUpdate(userId, newUser)
-		res.status(200).json({ success: true });
+		//console.log(req.body)
+		const oldUser = await User.findById(userId);
+		if(newUser.oldPass === oldUser.password){
+			if(newUser.newPass === newUser.reptPass){
+				var newPass = {password : newUser.newPass}
+				const oldUser = await User.findByIdAndUpdate(userId, newPass)
+				res.status(200).json({ success: true });
+			}
+			else{
+				newusers = {msg:'Error, no coinciden las contraseñas'};
+				res.status(200).json(newusers);
+			}
+		}
+		else{
+			newusers = {msg:'Error, la contraseña ingresada es incorrecta'};
+			res.status(200).json(newusers);
+		}
 	},
 	updateUser: async (req, res, next) => {
 		const { userId } = req.params;
 		const newUser = req.body;
 		const oldUser = await User.findByIdAndUpdate(userId, newUser)
-		res.status(200).json({ success: true });
+		res.clearCookie('Session');
+		res.redirect('/');
+		/*res.status(200).json({ success: true });*/
 	},
 	deleteUser: async (req, res, next) => {
 		const { userId } = req.params;
-		const oldUser = await User.findByIdAndRemove(userId)
-		res.status(200).json({ success: true });
+		var idUser = userId;
+		const files = await Files.find({idUser});
+		for(var ii=0; ii<files.length;ii++){
+			console.log(files[ii]._id);
+			const oldFile = await Files.findByIdAndDelete(files[ii]._id);
+			console.log("delete")
+		}
+		const oldUser = await User.findByIdAndRemove(userId);
+		res.clearCookie('Session');
+		res.redirect('/');
+		//res.status(200).json({ success: true });
 	}
 };

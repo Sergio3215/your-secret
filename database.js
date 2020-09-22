@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 
 mongoose.set('useFindAndModify', false)
-mongoose.connect(process.env.mongodb_Uri, {
+//process.env.mongodb_Uri
+mongoose.connect("mongodb+srv://Sergio:Serpiente32_@cluster0.6csdv.gcp.mongodb.net/Test?retryWrites=true&w=majority", {
 	useCreateIndex: true,
 	useNewUrlParser: true,
 	useUnifiedTopology: true

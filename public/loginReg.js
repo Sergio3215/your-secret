@@ -6,7 +6,7 @@ class LoginBar extends React.Component {
         this.handleClickButtonUser = this.handleClickButtonUser.bind(this);
 
         this.state = {
-            txtModal: "Login",
+            txtModal: "Iniciar sesion",
             modalDisplay: "none",
             userName: "",
             displayMenu: "none",
@@ -56,16 +56,16 @@ class LoginBar extends React.Component {
     }
     render() {
         var login = null;
-        var SigUp = null;
+        var SignUp = null;
         var logout = null;
         var menuLogin;
         var modal;
 
         if (document.cookie === "") {
             login =
-                <li onClick={this.handleClickButton}>Login</li>;
-            SigUp =
-                <li onClick={this.handleClickButton}>SigUp</li>;
+                <li onClick={this.handleClickButton}>Iniciar sesion</li>;
+            SignUp =
+                <li onClick={this.handleClickButton}>Registrate</li>;
             modal =
                 <Modal txtModal={this.state.txtModal}
                     handleClose={this.handleClose} />;
@@ -74,7 +74,7 @@ class LoginBar extends React.Component {
             var user = this.state.userName;
             login = <label id="username" style={{ "margin-right": "70px" }} onClick={this.handleClickButtonUser}>
                 {user}</label>;
-            logout = <li><a href="/logout">Logout</a></li>;
+            logout = <li><a href="/logout">Desconectar</a></li>;
             menuLogin =
                 <ul>
                     <li><a href={"/profile/" + user}>Perfil</a></li>
@@ -87,7 +87,7 @@ class LoginBar extends React.Component {
                 <nav class="login-btn">
                     <ul>
                         {login}
-                        {SigUp}
+                        {SignUp}
                     </ul>
                     <nav class="nav-optionLogin" style={{ display: this.state.displayMenu }}>
                         {menuLogin}
@@ -120,7 +120,7 @@ class Login extends React.Component {
         );
     }
 }
-class SigUp extends React.Component {
+class SignUp extends React.Component {
     render() {
         return (
             <div>
@@ -210,7 +210,7 @@ class Modal extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        if (this.props.txtModal === "Login") {
+        if (this.props.txtModal === "Iniciar sesion") {
             fetch('/users?user=' + this.state.user + '&&password=' + this.state.password)
                 .then(res => res.json())
                 .then(data => {
@@ -232,10 +232,12 @@ class Modal extends React.Component {
             var pass = this.state.password;
             var emai = this.state.email;
             var nam = this.state.name;
+            var confirmPass = this.state.confirmPassword;
             var users;
             users = {
                 user: us,
                 password: pass,
+                confirmPassword: confirmPass,
                 name: nam,
                 email: emai
             };
@@ -265,10 +267,10 @@ class Modal extends React.Component {
 
     render() {
         var classInterface = "";
-        if (this.props.txtModal === "Login") {
+        if (this.props.txtModal === "Iniciar sesion") {
             classInterface = "Modal-Interface";
         }
-        else if (this.props.txtModal === "SigUp") {
+        else if (this.props.txtModal === "Registrate") {
             classInterface = "Modal-Interface2";
         }
         return (
@@ -307,15 +309,15 @@ class ModalHeader extends React.Component {
 class ModalBody extends React.Component {
     render() {
         var bodyModal;
-        if (this.props.txtModal === "Login") {
+        if (this.props.txtModal === "Iniciar sesion") {
             bodyModal = <Login
                 handleChangeUser={this.props.handleChangeUser}
                 handleChangePassword={this.props.handleChangePassword}
                 errorMsg={this.props.errorMsg}
             />;
         }
-        else if (this.props.txtModal === "SigUp") {
-            bodyModal = <SigUp
+        else if (this.props.txtModal === "Registrate") {
+            bodyModal = <SignUp
                 handleChangeUser={this.props.handleChangeUser}
                 handleChangePassword={this.props.handleChangePassword}
                 handleChangeConfirmPassword={this.props.handleChangeConfirmPassword}

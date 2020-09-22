@@ -46,7 +46,7 @@ class Profile extends React.Component {
                     <nav class="Menu-principal-btn">
                         <button onClick={() => {
                             window.location.href = "/";
-                        }}>Back</button>
+                        }} class="btn-back" >Back</button>
                         <b style={{ "margin-left": (sizeWidth / 2) - 50 }}>Profile</b>
                     </nav>
                 </div>

@@ -63,7 +63,7 @@ class PostCommet extends React.Component {
             <form id="myForm" onSubmit={(e) => {
                 this.handlerSubmit(e);
             }} enctype="multipart/form-data" autoComplete="off">
-                    <textarea id="pc-comment" placeholder="let write a comment" name="comment"></textarea>
+                    <textarea id="pc-comment" placeholder="¿Como estuvo tu dia?" name="comment"></textarea>
                     <div class="pc-image">
                         {this.viewPrew}
                         {this.buttonView}
@@ -79,7 +79,7 @@ class PostCommet extends React.Component {
                         <span class="checkmark "></span>
                     </label>
                     <div id="pc-subminContainer">
-                    <input id="pc-submit" type="submit" value="send"/>
+                    <input id="pc-submit" type="submit" value="Enviar"/>
                         <div class="arrow"></div>
                     </div>
                 </div>

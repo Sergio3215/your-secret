@@ -192,7 +192,7 @@ class ViewComment extends React.Component {
         }
         var user = "";
         if (pic.anonimus) {
-            user = "Anonymus";
+            user = "Anonimo";
         }
         else {
             user = <a href={"/profile/" + pic.user}>{pic.user}</a>;

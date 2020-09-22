@@ -79,7 +79,6 @@ app.get('/logout', (req, res) => {
 	res.redirect('/');
 });
 
-app.get('port', process.env.port || 80)
 
 app.use(express.static('public'))
 app.use(express.static('public/profile'))
@@ -91,7 +90,7 @@ app.use((req, res)=>{
 	res.status(404).send('The page don\'t exist')
 })
 
-server.listen(app.get('port'), () => {
+server.listen(80, () => {
 	console.log('conected with WebSocket')
 });
 

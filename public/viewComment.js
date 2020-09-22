@@ -141,6 +141,7 @@ class ViewComment extends React.Component {
             this.clickMen = true;
             srt = "inline";
         }
+        div.getElementsByClassName("menu-panel")[0].style.display = srt;
         div.getElementsByTagName("input")[0].style.display = srt;
         div.getElementsByTagName("input")[1].style.display = srt;
     }
@@ -203,12 +204,14 @@ class ViewComment extends React.Component {
                 menubar = <div class="pb-menu" id={pic._id} onClick={(e) => {
                     this.clickMenu(pic._id);
                 }}><div class="containerMenu"></div>
+                <div id="menu-Post" class="menu-panel">
                     <input type="button" id="edit" onClick={() => {
                         this.handleEditPost(pic._id);
                     }} value="Editar" />
                     <input type="button" id="delete" onClick={() => {
                         this.handleDeletePost(pic._id);
                     }} value="Eliminar" />
+                    </div>
                 </div>;
             }
         }

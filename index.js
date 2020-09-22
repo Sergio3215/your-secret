@@ -90,7 +90,7 @@ app.use((req, res)=>{
 	res.status(404).send('The page don\'t exist')
 })
 
-server.listen(80, () => {
+server.listen(3000, () => {
 	console.log('conected with WebSocket')
 });
 

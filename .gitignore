@@ -1,7 +1,5 @@
 .env
 upload
-liked.png
-like.png
 Modal.css
 PostBoxStyle.css
 PostViewStyle.css
@@ -10,8 +8,6 @@ MenuStyle.css
 audio.jpg
 configurartion.css
 profile.css
-volver.png
-Back-Button-white.png
 volver.png
 Back-Button.png
 node_modules

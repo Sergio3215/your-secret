@@ -365,8 +365,10 @@ class ModalPostView extends React.Component {
         this.setState({ anonymusEdit: e.target.checked });
     }
     render() {
+        var sizeWidth = document.documentElement.clientWidth;
+        var sizeHeight = document.documentElement.clientHeight;
         return (
-            <div class="containerEdit">
+            <div class="containerEdit" style={{"width":sizeWidth,"height": sizeHeight-47}}>
                 <div class="dialogEdit">
                 <div class="headerEdit">
                     <input type="button" value="X" onClick={()=>this.props.handleEditPost(this.props.id)}/>

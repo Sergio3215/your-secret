@@ -7,8 +7,13 @@ class ViewComment extends React.Component {
         this.clickMenu = this.clickMenu.bind(this);
         this.handlerLike = this.handlerLike.bind(this);
         this.clickMen = false;
+        this.editClick = false;
+        this.idEditPost = "";
         this.state = {
-            commentArray: []
+            commentArray: [],
+            idEdit: "",
+            commentEdit: '',
+            anonymusEdit: false
         };
     }
     componentDidMount() {
@@ -47,12 +52,12 @@ class ViewComment extends React.Component {
         this.setState({ commentArray: commentarr }, () => this.forceUpdate());
     }
     likeUpdate(idLike, liked, user, idUser) {
-        try{
-        var div = document.getElementById(idLike);
-        div.childNodes[0].innerHTML = liked.length;
+        try {
+            var div = document.getElementById(idLike);
+            div.childNodes[0].innerHTML = liked.length;
         }
-        catch(e){
-            window.location.href=window.location.toString(); 
+        catch (e) {
+            window.location.href = window.location.toString();
         }
 
         var nameLiked = "";
@@ -120,6 +125,29 @@ class ViewComment extends React.Component {
     }
     handleEditPost(id) {
         console.log(id);
+        this.editClick = !this.editClick;
+
+        var username = document.getElementById(id + ":pb-user").innerHTML;
+        var comment = document.getElementById(id + ":pb-comment").innerHTML;
+        var key = false;
+        if (username === "Anonimo") {
+            key = true;
+        }
+
+        if (this.editClick) {
+            this.setState({
+                idEdit: id,
+                commentEdit: comment,
+                anonymusEdit: key
+            }, () => this.forceUpdate())
+        }
+        else {
+            this.setState({
+                idEdit: "",
+                commentEdit: '',
+                anonymusEdit: false
+            }, () => this.forceUpdate())
+        }
     }
     handleDeletePost(id) {
         fetch('/files/' + id, {
@@ -200,17 +228,17 @@ class ViewComment extends React.Component {
         }
         var menubar;
         if (document.cookie !== "") {
-            if(document.cookie.split("=")[1] === pic.idUser){
+            if (document.cookie.split("=")[1] === pic.idUser) {
                 menubar = <div class="pb-menu" id={pic._id} onClick={(e) => {
                     this.clickMenu(pic._id);
                 }}><div class="containerMenu"></div>
-                <div id="menu-Post" class="menu-panel">
-                    <input type="button" id="edit" onClick={() => {
-                        this.handleEditPost(pic._id);
-                    }} value="Editar" />
-                    <input type="button" id="delete" onClick={() => {
-                        this.handleDeletePost(pic._id);
-                    }} value="Eliminar" />
+                    <div id="menu-Post" class="menu-panel">
+                        <input type="button" id="edit" onClick={() => {
+                            this.handleEditPost(pic._id);
+                        }} value="Editar" />
+                        <input type="button" id="delete" onClick={() => {
+                            this.handleDeletePost(pic._id);
+                        }} value="Eliminar" />
                     </div>
                 </div>;
             }
@@ -264,10 +292,10 @@ class ViewComment extends React.Component {
             <div class="pb-Container">
                 {menubar}
                 <div class="pb-header">
-                    <div class="pb-user">{user}</div>
+                    <div id={pic._id + ":pb-user"} class="pb-user">{user}</div>
                     <div class="pb-date">{date}</div>
                 </div>
-                <div class="pb-comment">{pic.comment}</div>
+                <div id={pic._id + ":pb-comment"} class="pb-comment">{pic.comment}</div>
                 <div class="pb-file">{media}</div>
                 <div class={pbLike} id={pic._id + ":Like"} onClick={(e) => {
                     if (document.cookie !== "") {
@@ -285,9 +313,83 @@ class ViewComment extends React.Component {
         );
     }
     render() {
+        var editPost;
+        if (this.editClick) {
+            editPost = <ModalPostView id={this.state.idEdit}
+                commentEdit={this.state.commentEdit} anonymusEdit={this.state.anonymusEdit}
+                handleEditPost={this.handleEditPost}
+            />
+        }
         return (
             <div id="pb-postView">
                 {this.state.commentArray}
+                {editPost}
+            </div>
+        );
+    }
+}
+class ModalPostView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleComment = this.handleComment.bind(this);
+        this.handleAnonymus = this.handleAnonymus.bind(this);
+        this.state = {
+            commentEdit: this.props.commentEdit,
+            anonymusEdit: this.props.anonymusEdit
+        }
+    }
+    handleComment(e) {
+        this.setState({ commentEdit: e.target.value });
+    }
+    handleAnonymus(e) {
+        this.setState({ commentEdit: e.target.checked });
+    }
+    handleSubmit(e) {
+        e.preventDefault();
+        fetch('/files?_id=' + this.props.id + "&comment=" + this.state.commentEdit + "&anonimus=" + this.state.anonymusEdit, {
+            method: "put",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                window.location.href = "/";
+            })
+    }
+    handleComment(e) {
+        this.setState({ commentEdit: e.target.value });
+    }
+    handleAnonymus(e) {
+        this.setState({ anonymusEdit: e.target.checked });
+    }
+    render() {
+        return (
+            <div class="containerEdit">
+                <div class="dialogEdit">
+                <div class="headerEdit">
+                    <input type="button" value="X" onClick={()=>this.props.handleEditPost(this.props.id)}/>
+                </div>
+                <form onSubmit={this.handleSubmit} class="fm-editPost">
+                    <div class="comment">
+                        <textarea onChange={this.handleComment}>
+                            {this.state.commentEdit}
+                        </textarea>
+                    </div>
+                    <div class="Anonimo">
+                        <label class="pc-lb-anonymus">Anonimo</label>
+                        <label class="container" onChange={this.handleAnonymus}>
+                            <input type="checkbox" name="anonimus" checked={this.state.anonymusEdit} />
+                            <span class="checkmark "></span>
+                        </label>
+                    </div>
+                    <div>
+                        <input id="editPostSubmit"type="submit" value="Editar" />
+                        <div class="arrowEdit"></div>
+                    </div>
+                </form>
+                </div>
             </div>
         );
     }

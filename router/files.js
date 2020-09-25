@@ -5,8 +5,8 @@ const router = express.Router()
 const {
 	index,
 	newFiles,
-	getFiles/*,
-	replaceFiles*/,
+	getFiles,
+	replaceFiles,
 	deleteFiles,
 	likes,
 	profile
@@ -19,8 +19,7 @@ router.get("/:user", profile);
 router.post("/", newFiles);
 
 //router.get("/", getFiles);
-/*
-router.put("/:filesId", replaceFiles);*/
+router.put("/", replaceFiles);
 
 router.put("/:filesId", likes);
 

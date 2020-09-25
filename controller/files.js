@@ -76,13 +76,15 @@ module.exports = {
 		const files = await Files.find();
 		files.loginUser = user;
 		res.status(200).json(files);
-	}/*,
-	replaceFiles: async (req, res, next) => {
-		const { filesId } = req.params;
-		const newFiles = req.body;
-		const oldFiles = await Files.findByIdAndUpdate(filesId, newFiles)
-		res.status(200).json({ success: true });
 	},
+	replaceFiles: async (req, res, next) => {
+		console.log(req.query);
+		const {_id, comment, anonimus} = req.query;
+		
+		const newFiles = req.body;
+		const oldFiles = await Files.findByIdAndUpdate(_id, {comment, anonimus})
+		res.status(200).json({ success: true });
+	}/*,
 	updateFiles: async (req, res, next) => {
 		const { filesId } = req.params;
 		const newFiles = req.body;

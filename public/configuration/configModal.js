@@ -112,8 +112,8 @@ class ConfigModal extends React.Component {
                 </div>
                 {body}
                 <div class="Modal-Footer">
-                    <input type="submit" class="aceptar" value={affirmative} />
-                    <input type="button" class="cancelar" value={negative}
+                    <input type="submit" class="acept" value={affirmative} />
+                    <input type="button" class="cancel" value={negative}
                         onClick={this.props.handleClose} />
                 </div>
             </form>

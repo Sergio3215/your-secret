@@ -66,7 +66,9 @@ app.get('/profile/:name', async (req, res) => {
 		res.sendFile(__dirname + "/public/profile/index.html");
 	}
 	else {
-		res.send("Error! No se ha encontrado el usuario");
+		res.send(`
+		<h1>Error 404</h1>
+		<h2>No se ha encontrado el usuario deseado</h2>`);
 	}
 });
 

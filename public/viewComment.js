@@ -322,10 +322,10 @@ class ViewComment extends React.Component {
         }
         return (
             <div>
-            <div id="pb-postView">
-                {this.state.commentArray}
-            </div>
-            <div>
+                <div id="pb-postView">
+                    {this.state.commentArray}
+                </div>
+                <div>
                     {editPost}
                 </div>
             </div>
@@ -372,29 +372,29 @@ class ModalPostView extends React.Component {
         var sizeWidth = document.documentElement.clientWidth;
         var sizeHeight = document.documentElement.clientHeight;
         return (
-            <div class="containerEdit" style={{"width":sizeWidth,"height": sizeHeight-47}}>
+            <div class="containerEdit" style={{ "width": sizeWidth, "height": sizeHeight - 47 }}>
                 <div class="dialogEdit">
-                <div class="headerEdit">
-                    <input type="button" value="X" onClick={()=>this.props.handleEditPost(this.props.id)}/>
-                </div>
-                <form onSubmit={this.handleSubmit} class="fm-editPost">
-                    <div class="comment">
-                        <textarea onChange={this.handleComment}>
-                            {this.state.commentEdit}
-                        </textarea>
+                    <div class="headerEdit">
+                        <input type="button" value="X" onClick={() => this.props.handleEditPost(this.props.id)} />
                     </div>
-                    <div class="Anonimo">
-                        <label class="pc-lb-anonymus">Anonimo</label>
-                        <label class="container" onChange={this.handleAnonymus}>
-                            <input type="checkbox" name="anonimus" checked={this.state.anonymusEdit} />
-                            <span class="checkmark "></span>
-                        </label>
-                    </div>
-                    <div>
-                        <input id="editPostSubmit"type="submit" value="Editar" />
-                        <div class="arrowEdit"></div>
-                    </div>
-                </form>
+                    <form onSubmit={this.handleSubmit} class="fm-editPost">
+                        <div class="comment">
+                            <textarea onChange={this.handleComment}>
+                                {this.state.commentEdit}
+                            </textarea>
+                        </div>
+                        <div class="Anonimo">
+                            <label class="pc-lb-anonymus">Anonimo</label>
+                            <label class="container" onChange={this.handleAnonymus}>
+                                <input type="checkbox" name="anonimus" checked={this.state.anonymusEdit} />
+                                <span class="checkmark "></span>
+                            </label>
+                        </div>
+                        <div>
+                            <input id="editPostSubmit" type="submit" value="Editar" />
+                            <div class="arrowEdit"></div>
+                        </div>
+                    </form>
                 </div>
             </div>
         );

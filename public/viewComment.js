@@ -321,9 +321,13 @@ class ViewComment extends React.Component {
             />
         }
         return (
+            <div>
             <div id="pb-postView">
                 {this.state.commentArray}
-                {editPost}
+            </div>
+            <div>
+                    {editPost}
+                </div>
             </div>
         );
     }

@@ -83,11 +83,12 @@ app.get('/logout', (req, res) => {
 app.use(express.static('public'))
 app.use(express.static('public/profile'))
 app.use(express.static('public/configuration'))
+app.use(express.static('public/ErrorPage'))
 app.use(express.static('react_modules'));
 
 //Error Custom
 app.use((req, res)=>{
-	res.status(404).send('The page don\'t exist')
+	res.status(404).sendFile(__dirname + "/public/ErrorPage/index.html");
 })
 
 server.listen(process.env.PORT, () => {

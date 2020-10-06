@@ -22,13 +22,13 @@ module.exports = {
 			res.status(200).json(comment);
 		}
 		catch (e) {
-			console.log(e)
+			//console.log(e)
 			res.status(200).json([]);
 		}
 	},
 	newFiles: async (req, res, next) => {
 		var { fileId } = req.params;
-		console.log(req.body)
+		//console.log(req.body)
 		const { comment } = req.body;
 		let urlPhoto = "";
 		let extension = "";

@@ -28,28 +28,44 @@ class ViewComment extends React.Component {
     setRender() {
         socket.emit('posted', this.state.render)
         socket.on('fileUpdate', (files) => {
-            console.log(files)
+            // console.log(files)
             this.fetchUpdate(files);
         });
         socket.on('likeUpdate', (liked, id, user, idUser) => {
             //console.log(key)
             //console.log(like)
-            console.log(liked)
-            console.log(id)
-            console.log(user)
+            // console.log(liked)
+            // console.log(id)
+            // console.log(user)
             id = id + ":Like";
             this.likeUpdate(id, liked, user, idUser);
         });
+        socket.on('deletedPost', (id) => {
+            var elem = document.getElementById(id + ":postContainer");
+            elem.parentElement.removeChild(elem);
+
+            var elem = document.getElementById(id + ":commentContainer");
+            elem.parentElement.removeChild(elem);
+        })
     }
     fetchUpdate(file) {
         var data = [];
         data.push(file)
         let commentarr = this.state.commentArray;
-        commentarr = commentarr.reverse();
+        //commentarr = commentarr.reverse();
         let comment = data.map(this.eachComment.bind(this));
         commentarr.push(comment[0]);
-        commentarr = commentarr.reverse();
+        // commentarr = commentarr.reverse();
         this.setState({ commentArray: commentarr }, () => this.forceUpdate());
+
+        var elem = document.getElementById("pb-postView");
+        elem.firstElementChild.after(elem.lastElementChild);
+        /* 
+        var el = document.getElementById("pb-postView");
+        var first = document.getElementById(elem.firstElementChild.children[0].id)
+        elem.firstElementChild.after(elem.firstElementChild,elem.lastElementChild)
+        elem.firstElementChild.before(elem.firstElementChild,elem.lastElementChild)
+        */
     }
     likeUpdate(idLike, liked, user, idUser) {
         try {
@@ -124,7 +140,7 @@ class ViewComment extends React.Component {
         }
     }
     handleEditPost(id) {
-        console.log(id);
+        // console.log(id);
         this.editClick = !this.editClick;
 
         var username = document.getElementById(id + ":pb-user").innerHTML;
@@ -153,10 +169,6 @@ class ViewComment extends React.Component {
         fetch('/files/' + id, {
             method: 'DELETE'
         })
-            .then(response => {
-                this.fetchMount();
-                return response;
-            });
     }
     clickMenu(id) {
         var div = document.getElementById(id);
@@ -174,7 +186,7 @@ class ViewComment extends React.Component {
         div.getElementsByTagName("input")[1].style.display = srt;
     }
     handlerLike(e) {
-        console.log(e);
+        // console.log(e);
         var key = false;
         if (e.target.parentNode.className !== "pb-liked") {
             key = true;
@@ -289,25 +301,30 @@ class ViewComment extends React.Component {
         }
 
         return (
-            <div class="pb-Container">
-                {menubar}
-                <div class="pb-header">
-                    <div id={pic._id + ":pb-user"} class="pb-user">{user}</div>
-                    <div class="pb-date">{date}</div>
+            <div>
+                <div id={pic._id + ":postContainer"} class="pb-Container">
+                    {menubar}
+                    <div class="pb-header">
+                        <div id={pic._id + ":pb-user"} class="pb-user">{user}</div>
+                        <div class="pb-date">{date}</div>
+                    </div>
+                    <div id={pic._id + ":pb-comment"} class="pb-comment">{pic.comment}</div>
+                    <div class="pb-file">{media}</div>
+                    <div class={pbLike} id={pic._id + ":Like"} onClick={(e) => {
+                        if (document.cookie !== "") {
+                            this.handlerLike(e);
+                        }
+                        else {
+                            alert("you need register on the web page")
+                        }
+                    }}>
+                        <span>{pic.liked.length}</span>
+                        {like}
+                        <span class="pb-likeNames">{nameLiked}</span>
+                    </div>
                 </div>
-                <div id={pic._id + ":pb-comment"} class="pb-comment">{pic.comment}</div>
-                <div class="pb-file">{media}</div>
-                <div class={pbLike} id={pic._id + ":Like"} onClick={(e) => {
-                    if (document.cookie !== "") {
-                        this.handlerLike(e);
-                    }
-                    else {
-                        alert("you need register on the web page")
-                    }
-                }}>
-                    <span>{pic.liked.length}</span>
-                    {like}
-                    <span class="pb-likeNames">{nameLiked}</span>
+                <div id={pic._id + ":commentContainer"}>
+                    <Comment id={pic._id} />
                 </div>
             </div>
         );
@@ -397,6 +414,162 @@ class ModalPostView extends React.Component {
                     </form>
                 </div>
             </div>
+        );
+    }
+}
+
+class Comment extends React.Component {
+    constructor() {
+        super();
+        this.setRender = this.setRender.bind(this);
+        this.state = {
+            commentArr: []
+        }
+    }
+    componentDidMount() {
+        this.fetchMount();
+        this.setRender();
+    }
+
+    setRender() {
+        socket.on('commentUpdate:', (files, id) => {
+            // console.log(files)
+            if (id === this.props.id) {
+                this.fetchMount()
+            }
+        });
+    }
+    fetchMount() {
+        fetch('/comment/' + this.props.id)
+            .then(res => res.json())
+            .then(json => {
+                if (json.length > 0) {
+                    let commentHtml = json.map(this.eachComment.bind(this));
+                    this.setState({ commentArr: commentHtml }, () => this.forceUpdate());
+                }
+                else {
+                    var data = ["1"];
+                    let commentHtml = data.map(this.eachComment.bind(this));
+                    this.setState({ commentArr: commentHtml }, () => this.forceUpdate());
+                }
+            })
+    }
+    eachComment(pic) {
+        var comment;
+        if (pic.user === undefined) {
+            comment =
+                <span>
+                    no hay comentarios
+            </span>;
+        }
+        else {
+            var date = new Date(pic.dateComment).toLocaleString();
+            comment =
+                <div id={"comment:" + pic._id} class="cp-comment-content">
+                    <div class="cp-user">{pic.user}</div>
+                    <div class="cp-date">{date}</div>
+                    <div class="cp-comment">{pic.comment}</div>
+                </div>;
+        }
+        // console.log(pic)
+        return (
+            <div class="cp-containComment">
+                {comment}
+            </div>
+        );
+    }
+    render() {
+        return (
+            <div class="cp-Container">
+                <div class="cp-ContentPostComment">
+                    <CommentPost id={this.props.id} />
+                </div>
+                {this.state.commentArr}
+            </div>
+        );
+    }
+}
+class CommentPost extends React.Component {
+    constructor() {
+        super();
+        this.handlerSubmit = this.handlerSubmit.bind(this);
+        this.handleChangeSelect = this.handleChangeSelect.bind(this);
+        this.handleFile = this.handleFile.bind(this);
+        this.viewPrew;
+        this.buttonView;
+        this.state = {
+            user: [],
+            userSelected: '',
+            classText: 'selectFile'
+        };
+    }
+
+    handleChangeSelect(e) {
+        this.setState({
+            userSelected: e.target.value
+        });
+    }
+    handleFile(e) {
+        //console.log(e.target);
+        //var img = document.getElementById("pc-image");
+        var file = e.target.files[0];
+        // console.log(URL.createObjectURL(e.target.files[0]))
+        var typeFile = file.type.split("/");
+        if (typeFile[0] === "image") {
+            this.viewPrew = <img src={URL.createObjectURL(e.target.files[0])} id="pc-view" widht="70px" height="70px" />;
+        }
+        else if (typeFile[0] === "video") {
+            this.viewPrew = <video src={URL.createObjectURL(e.target.files[0])} id="pc-view" widht="50px" height="50px" />;
+        }
+        else {
+            this.viewPrew = <img src="audio.jpg" id="pc-view" widht="70px" height="70px" />;
+        }
+
+        this.buttonView = <label class="pc-close" onClick={this.clickClouse.bind(this)}>x</label>;
+
+        this.setState({ classText: 'fileSelected' }, () => this.forceUpdate());
+
+    }
+    clickClouse() {
+        this.viewPrew = [];
+        this.buttonView = [];
+        document.getElementById("pc-file").value = "";
+        this.setState({ classText: 'selectFile' }, () => this.forceUpdate());
+    }
+    handlerSubmit(e) {
+        e.preventDefault();
+        //console.log("send");
+        var myForm = e.target;
+        var formData = new FormData(myForm);
+        e.target.reset();
+        this.setState({ classText: 'selectFile' }, () => this.forceUpdate());
+        this.viewPrew = [];
+        fetch('/comment/' + this.props.id, {
+            method: 'POST',
+            body: formData
+        })
+    }
+    render() {
+        return (
+            <form id={"myFormComment:" + this.props.id} onSubmit={(e) => {
+                this.handlerSubmit(e);
+            }} enctype="multipart/form-data" autoComplete="off">
+                <textarea id="cp-comment" placeholder="¿Como estuvo tu dia?" name="comment"></textarea>
+                {/* <div class="pc-image">
+                        {this.viewPrew}
+                        {this.buttonView}
+                        <b class={this.state.classText} onClick={()=>document.getElementById("pc-file").click()}>
+                            Añade tu multimedia
+                        </b>
+                        <input id="pc-file" type="file" name="file" onChange={this.handleFile} />
+                    </div>*/}
+                <div class="cp-footer">
+                    <div id="pc-subminContainer">
+                        <input id="pc-submit" type="submit" value="Enviar" />
+                        <div class="cp-arrow"></div>
+                    </div>
+                </div>
+            </form>
         );
     }
 }

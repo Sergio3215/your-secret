@@ -1,4 +1,4 @@
-const Files = require('../model/files');
+const Comment = require('../model/comment');
 const User = require('../model/userModel');
 const path = require('path');
 const socket = require("../socket").socket;
@@ -6,30 +6,29 @@ const socket = require("../socket").socket;
 module.exports = {
 	index: async (req, res, next) => {
 		//console.log(req.cookies.Session)
+		let comment=[{}];
 		try {
-			let anonimus = [true, false];
-			const files = await Files.find({ anonimus }).sort({ datePost: -1 });
-
+			var {fileId} = req.params;
+			comment = await Comment.find({fileId}).sort({ datePost: -1 });
 			if (req.cookies.Session !== undefined) {
 				var _id = req.cookies.Session;
 				const userFetch = await User.findById({ _id });
 				let user = userFetch.user;
-				for (var kk = 0; kk < files.length; kk++) {
-					files[kk].loginUser = user;
+				for (var kk = 0; kk < comment.length; kk++) {
+					comment[kk].loginUser = user;
 				}
 			}
 
-			res.status(200).json(files);
+			res.status(200).json(comment);
 		}
 		catch (e) {
-			//console.log(e)
+			console.log(e)
+			res.status(200).json([]);
 		}
 	},
 	newFiles: async (req, res, next) => {
-		let anonimus = false
-		if (req.body.anonimus !== undefined) {
-			anonimus = true;
-		}
+		var { fileId } = req.params;
+		console.log(req.body)
 		const { comment } = req.body;
 		let urlPhoto = "";
 		let extension = "";
@@ -49,7 +48,7 @@ module.exports = {
 		catch (e) {
 
 		}
-		const datePost = new Date();
+		const dateComment = new Date();
 		var _id = req.cookies.Session;
 		const userFetch = await User.findById({ _id });
 		let user = userFetch.user;
@@ -57,7 +56,7 @@ module.exports = {
 		const loginUser = "";
 		const idUser = _id;
 		const liked = [{}]
-		const newFiles = await new Files({ comment, user, loginUser, idUser, anonimus, urlPhoto, extension, datePost, like, liked });
+		const newFiles = await new Comment({ comment, fileId, user, loginUser, idUser, urlPhoto, extension, dateComment, like, liked });
 		const files = await newFiles.save();
 		//console.log(files);
 
@@ -65,10 +64,10 @@ module.exports = {
 		files.loginUser = user;
 
 		//websocket
-		socket.io.emit('fileUpdate', files);
+		socket.io.emit('commentUpdate:', files, fileId);
 		res.status(200).json(files);
 	},
-	getFiles: async (req, res, next) => {
+	/*getFiles: async (req, res, next) => {
 		var _id = req.cookies.Session;
 		const userFetch = await User.findById({ _id });
 		let user = userFetch.user;
@@ -84,14 +83,14 @@ module.exports = {
 		const newFiles = req.body;
 		const oldFiles = await Files.findByIdAndUpdate(_id, {comment, anonimus})
 		res.status(200).json({ success: true });
-	}/*,
+	},
 	updateFiles: async (req, res, next) => {
 		const { filesId } = req.params;
 		const newFiles = req.body;
 		const oldFiles = await Files.findByIdAndUpdate(filesId, newFiles)
 		res.status(200).json({ success: true });
-	}*/,
-	profile: async (req, res, next) => {
+	},
+	/*profile: async (req, res, next) => {
 		var { user } = req.params;
 		var anonimus = false;
 		const files = await Files.find({ anonimus, user });
@@ -163,10 +162,7 @@ module.exports = {
 	},
 	deleteFiles: async (req, res, next) => {
 		const { filesId } = req.params;
-		const oldFiles = await Files.findByIdAndRemove(filesId);
-
-		socket.io.emit('deletedPost', filesId);
-
+		const oldFiles = await Files.findByIdAndRemove(filesId)
 		res.status(200).json({ success: true });
-	}
+	}*/
 };

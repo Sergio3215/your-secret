@@ -292,11 +292,25 @@ class ViewComment extends React.Component {
         var like;
         var pbLike;
         if (likeBool) {
-            like = <img src="/liked.png" width="50px" height="50px" />;
+            like = <img src="/liked.png" width="50px" height="50px"  onClick={(e) => {
+                if (document.cookie !== "") {
+                    this.handlerLike(e);
+                }
+                else {
+                    alert("you need register on the web page")
+                }
+            }}/>;
             pbLike = "pb-liked";
         }
         else {
-            like = <img src="/like.png" width="50px" height="50px" />;
+            like = <img src="/like.png" width="50px" height="50px"  onClick={(e) => {
+                if (document.cookie !== "") {
+                    this.handlerLike(e);
+                }
+                else {
+                    alert("you need register on the web page")
+                }
+            }}/>;
             pbLike = "pb-like";
         }
 
@@ -310,14 +324,7 @@ class ViewComment extends React.Component {
                     </div>
                     <div id={pic._id + ":pb-comment"} class="pb-comment">{pic.comment}</div>
                     <div class="pb-file">{media}</div>
-                    <div class={pbLike} id={pic._id + ":Like"} onClick={(e) => {
-                        if (document.cookie !== "") {
-                            this.handlerLike(e);
-                        }
-                        else {
-                            alert("you need register on the web page")
-                        }
-                    }}>
+                    <div class={pbLike} id={pic._id + ":Like"}>
                         <span>{pic.liked.length}</span>
                         {like}
                         <span class="pb-likeNames">{nameLiked}</span>

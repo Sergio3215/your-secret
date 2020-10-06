@@ -481,9 +481,9 @@ class Comment extends React.Component {
     render() {
         return (
             <div class="cp-Container">
-                <div class="cp-ContentPostComment">
+                {(document.cookie !== "")?<div class="cp-ContentPostComment">
                     <CommentPost id={this.props.id} />
-                </div>
+                </div>:null}
                 {this.state.commentArr}
             </div>
         );

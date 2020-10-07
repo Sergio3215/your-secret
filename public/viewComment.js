@@ -308,7 +308,7 @@ class ViewComment extends React.Component {
                     this.handlerLike(e);
                 }
                 else {
-                    alert("you need register on the web page")
+                    alert("you need register on the web page");
                 }
             }}/>;
             pbLike = "pb-like";

@@ -35,7 +35,6 @@ module.exports = {
 		let urlPhoto = "";
 		let extension = "";
 		try {
-			urlPhoto = "upload/" + req.file.filename;
 
 			if (path.extname(req.file.originalname) === ".mp4") {
 				extension = "video";
@@ -46,9 +45,18 @@ module.exports = {
 			else {
 				extension = "image";
 			}
+
+			let cloudinary = require('../cloudinary');
+			var result = await cloudinary.uploader.upload(req.file.path,{resource_type: "auto"});
+
+			console.log(result.url)
+			//console.log(req.file)
+
+			urlPhoto = result.url;
+			//urlPhoto = "upload/" + req.file.filename;
 		}
 		catch (e) {
-
+			console.log(e)
 		}
 		const datePost = new Date();
 		var _id = req.cookies.Session;

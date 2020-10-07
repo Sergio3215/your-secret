@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 		cb(null, new Date().getTime() + path.extname(file.originalname))
 	}
 });
-app.use(multer({ storage }).single('file'))
+app.use(multer({ storage }).single('file'));
 
 //Rest API
 app.use(bodyParser.json());

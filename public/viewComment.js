@@ -221,15 +221,15 @@ class ViewComment extends React.Component {
     eachComment(pic) {
         var media;
         if (pic.extension === "video") {
-            media = <video src={"/" + pic.urlPhoto} controls height="140px" width="250px" />
+            media = <video src={pic.urlPhoto} controls height="140px" width="250px" />
         }
         else if (pic.extension === "audio") {
             media = <audio controls height="300px" width="250px">
-                <source src={"/" + pic.urlPhoto} type="audio/mp3" />
+                <source src={pic.urlPhoto} type="audio/mp3" />
             </audio>
         }
         else if (pic.extension === "image") {
-            media = <img src={"/" + pic.urlPhoto} height="300px" width="300px" />
+            media = <img src={pic.urlPhoto} height="300px" width="300px" />
         }
         var user = "";
         if (pic.anonimus) {

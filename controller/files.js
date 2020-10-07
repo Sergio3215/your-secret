@@ -1,4 +1,5 @@
 const Files = require('../model/files');
+const Comment = require('../model/comment');
 const User = require('../model/userModel');
 const path = require('path');
 const socket = require("../socket").socket;
@@ -164,6 +165,14 @@ module.exports = {
 	deleteFiles: async (req, res, next) => {
 		const { filesId } = req.params;
 		const oldFiles = await Files.findByIdAndRemove(filesId);
+
+		const fileId = filesId;
+		const comment = await Comment.find({fileId});
+		//console.log(comment)
+		for(var ii = 0; ii<comment.length;ii++){
+			//console.log(comment[ii]._id)
+			let oldComment = await Comment.findByIdAndRemove(comment[ii]._id);
+		}
 
 		socket.io.emit('deletedPost', filesId);
 

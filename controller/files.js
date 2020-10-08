@@ -3,6 +3,8 @@ const Comment = require('../model/comment');
 const User = require('../model/userModel');
 const path = require('path');
 const socket = require("../socket").socket;
+let cloudinary = require('../cloudinary');
+const fs = require('fs-extra')
 
 module.exports = {
 	index: async (req, res, next) => {
@@ -34,6 +36,7 @@ module.exports = {
 		const { comment } = req.body;
 		let urlPhoto = "";
 		let extension = "";
+		let public_Id = "";
 		try {
 
 			if (path.extname(req.file.originalname) === ".mp4") {
@@ -46,10 +49,11 @@ module.exports = {
 				extension = "image";
 			}
 
-			let cloudinary = require('../cloudinary');
-			var result = await cloudinary.uploader.upload(req.file.path,{resource_type: "auto"});
+			var result = await cloudinary.uploader.upload(req.file.path, { resource_type: "auto" });
 
+			public_Id = result.public_id;
 			console.log(result.url)
+			fs.unlink(req.file.path)
 			//console.log(req.file)
 
 			urlPhoto = result.url;
@@ -66,7 +70,7 @@ module.exports = {
 		const loginUser = "";
 		const idUser = _id;
 		const liked = [{}]
-		const newFiles = await new Files({ comment, user, loginUser, idUser, anonimus, urlPhoto, extension, datePost, like, liked });
+		const newFiles = await new Files({ comment, user, loginUser, idUser, anonimus, urlPhoto, extension, public_Id, datePost, like, liked });
 		const files = await newFiles.save();
 		//console.log(files);
 
@@ -88,10 +92,10 @@ module.exports = {
 	},
 	replaceFiles: async (req, res, next) => {
 		console.log(req.query);
-		const {_id, comment, anonimus} = req.query;
-		
+		const { _id, comment, anonimus } = req.query;
+
 		const newFiles = req.body;
-		const oldFiles = await Files.findByIdAndUpdate(_id, {comment, anonimus})
+		const oldFiles = await Files.findByIdAndUpdate(_id, { comment, anonimus })
 		res.status(200).json({ success: true });
 	}/*,
 	updateFiles: async (req, res, next) => {
@@ -110,7 +114,7 @@ module.exports = {
 			const userFetch = await User.findById({ _id });
 			user = userFetch.user;
 		}
-		catch(e) {
+		catch (e) {
 			user = "";
 		}
 
@@ -174,10 +178,22 @@ module.exports = {
 		const { filesId } = req.params;
 		const oldFiles = await Files.findByIdAndRemove(filesId);
 
+		try{
+			if(oldFiles.public_Id !== ""){
+				var public_id = oldFiles.public_Id;
+				//console.log(oldFiles)
+				const result =  await cloudinary.uploader.destroy(public_id, { resource_type: oldFiles.extension });
+				//console.log(result)
+			}
+		}
+		catch(e){
+
+		}
+
 		const fileId = filesId;
-		const comment = await Comment.find({fileId});
+		const comment = await Comment.find({ fileId });
 		//console.log(comment)
-		for(var ii = 0; ii<comment.length;ii++){
+		for (var ii = 0; ii < comment.length; ii++) {
 			//console.log(comment[ii]._id)
 			let oldComment = await Comment.findByIdAndRemove(comment[ii]._id);
 		}

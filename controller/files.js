@@ -60,7 +60,7 @@ module.exports = {
 			//urlPhoto = "upload/" + req.file.filename;
 		}
 		catch (e) {
-			console.log(e)
+			//console.log(e)
 		}
 		const datePost = new Date();
 		var _id = req.cookies.Session;
@@ -182,7 +182,7 @@ module.exports = {
 			if(oldFiles.public_Id !== ""){
 				var public_id = oldFiles.public_Id;
 				//console.log(oldFiles)
-				const result =  await cloudinary.uploader.destroy(public_id, { resource_type: oldFiles.extension });
+				const result =  await cloudinary.uploader.destroy(public_id, { resource_type: "auto" });
 				//console.log(result)
 			}
 		}

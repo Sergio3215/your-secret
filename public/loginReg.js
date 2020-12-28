@@ -93,7 +93,7 @@ class LoginBar extends React.Component {
                         {menuLogin}
                     </nav>
                 </nav>
-                <div class="Modal-Container" style={{ "display": this.state.modalDisplay }}>
+                <div class="Modal-Container" style={{ "display": this.state.modalDisplay, "height": window.innerHeight+4, "width": window.innerWidth }}>
                     {modal}
                 </div>
             </div>
